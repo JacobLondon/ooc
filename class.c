@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <assert.h>
 
 #include "class.h"
@@ -26,31 +25,34 @@ void *new(const void *_class, ...)
 	return self;
 }
 
-void delete(void * self)
+void delete(void *_self)
 {
-	const struct Class **cp = self;
-	if (self && *cp && (*cp)->dtor) {
-		self = (* cp)->dtor(self);
-		free(self);
+	const struct Class **cp = _self;
+	if (_self && *cp && (*cp)->dtor) {
+		_self = (* cp)->dtor(_self);
+		free(_self);
 	}
 }
 
-size_t size_of(const void *self)
+void *clone(const void *_self)
 {
-	const struct Class *const *cp = self;
-	assert(self && *cp);
+	const struct Class *const *cp = _self;
+	assert(_self && *cp);
+	assert((*cp)->clone);
+	return (*cp)->clone(_self);
+}
+
+size_t size_of(const void *_self)
+{
+	const struct Class *const *cp = _self;
+	assert(_self && *cp);
 	return (*cp)->size;
 }
 
-int main(void)
+char *to_string(const void *_self)
 {
-	void *a = new(String, "a");
-	void *b = new(String, "b");
-
-	printf("%s\n", ((struct String *)a)->text);
-
-	delete(a);
-	delete(b);
-
-	return 0;
+	const struct Class *const *cp = _self;
+	assert(_self && *cp);
+	assert((*cp)->to_string);
+	return (*cp)->to_string(_self);
 }

@@ -1,5 +1,5 @@
-#ifndef OOP_STRING_H
-#define OOP_STRING_H
+#ifndef OOC_STRING_H
+#define OOC_STRING_H
 
 struct String {
 	const void *class;
@@ -8,4 +8,4 @@ struct String {
 
 extern const void *String;
 
-#endif /* OOP_STRING_H */
+#endif /* OOC_STRING_H */

@@ -8,6 +8,7 @@
 static void *String_ctor(void *_self, va_list *ap);
 static void *String_dtor(void *_self);
 static void *String_clone(const void *_self);
+static char *String_to_string(const void *_self);
 
 static void *String_ctor(void *_self, va_list *ap)
 {
@@ -35,9 +36,16 @@ static void *String_clone(const void *_self)
 	return new(String, self->text);
 }
 
+static char *String_to_string(const void *_self)
+{
+	const struct String *self = _self;
+	return self->text;
+}
+
 static const struct Class _String = {
 	sizeof(struct String),
-	String_ctor, String_dtor, String_clone
+	String_ctor, String_dtor,
+	String_clone, String_to_string
 };
 
 const void *String = &_String;
