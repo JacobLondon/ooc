@@ -15,10 +15,10 @@ void *new(const void *_class, ...)
 	   setting that */
 	*(const struct Class **)self = class;
 
-	if (class->v->ctor) {
+	if (class->ctor) {
 		va_list ap;
 		va_start(ap, _class);
-		self = class->v->ctor(self, &ap);
+		self = class->ctor(self, &ap);
 		va_end(ap);
 	}
 
@@ -28,8 +28,8 @@ void *new(const void *_class, ...)
 void delete(void *_self)
 {
 	const struct Class **class = _self;
-	if (_self && *class && (*class)->v->dtor) {
-		_self = (* class)->v->dtor(_self);
+	if (_self && *class && (*class)->dtor) {
+		_self = (* class)->dtor(_self);
 		free(_self);
 	}
 }
@@ -74,35 +74,35 @@ bool is_of(const void *_self, const void *_class)
 					class = super(class);
 				}
 				else {
-					return 0;
+					return false;
 				}
 			}
-			return 1;
+			return true;
 		}
 	}
-	return 0;
+	return false;
 }
 
 void *clone(const void *_self)
 {
 	const struct Class *const *class = _self;
 	assert(_self && *class);
-	assert((*class)->v->clone);
-	return (*class)->v->clone(_self);
+	assert((*class)->clone);
+	return (*class)->clone(_self);
 }
 
 char *str(const void *_self)
 {
 	const struct Class *const *class = _self;
 	assert(_self && *class);
-	assert((*class)->v->str);
-	return (*class)->v->str(_self);
+	assert((*class)->str);
+	return (*class)->str(_self);
 }
 
 size_t hash(const void *_self)
 {
 	const struct Class *const *class = _self;
 	assert(_self && *class);
-	assert((*class)->v->hash);
-	return (*class)->v->hash(_self);
+	assert((*class)->hash);
+	return (*class)->hash(_self);
 }

@@ -5,7 +5,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-struct VTable {
+struct Class {
+	size_t size;
+	const struct Class *class;
+	const struct Class *super;
+	/* class methods */
 	void *(* ctor)(void *_self, va_list *ap);
 	void *(* dtor)(void *_self);
 	void *(* clone)(const void *_self);
@@ -13,19 +17,13 @@ struct VTable {
 	size_t (* hash)(const void *_self);
 };
 
-struct Class {
-	size_t size;
-	const struct Class *class;
-	const struct Class *super;
-	const struct VTable *v;
-};
-
+/* class methods */
 void *new(const void *_class, ...);
 void delete(void *_self);
 void *clone(const void *_self);
 char *str(const void *_self);
 size_t hash(const void *_self);
-
+/* introspection methods */
 const void *super(const void *_self);
 size_t size_of(const void *_self);
 const void *class_of(const void *_self);

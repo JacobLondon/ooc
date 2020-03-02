@@ -42,19 +42,16 @@ static char *String_str(const void *_self)
 	return self->text;
 }
 
-static const struct VTable _VTable = {
+static const struct Class _String = {
+	.size = sizeof(struct String),
+	.class = &_String,
+	.super = NULL,
+
 	.ctor = String_ctor,
 	.dtor = String_dtor,
 	.clone = String_clone,
 	.str = String_str,
 	.hash = NULL,
-};
-
-static const struct Class _String = {
-	.size = sizeof(struct String),
-	.class = &_String,
-	.super = NULL,
-	.v = &_VTable,
 };
 
 const void *String = &_String;
