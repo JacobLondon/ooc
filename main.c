@@ -7,9 +7,9 @@ int main(void)
 {
 	void *a = new(String, "Hello, World!");
 
-	printf("a = %s\n", to_string(a));
+	printf("a = %s\n", str(a));
 	void *c = clone(a);
-	printf("c = %s\n", to_string(c));
+	printf("c = %s\n", str(c));
 
 	delete(a);
 	delete(c);

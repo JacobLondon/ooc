@@ -2,20 +2,34 @@
 #define OOC_CLASS_H
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdlib.h>
+
+struct VTable {
+	void *(* ctor)(void *_self, va_list *ap);
+	void *(* dtor)(void *_self);
+	void *(* clone)(const void *_self);
+	char *(* str)(const void *_self);
+	size_t (* hash)(const void *_self);
+};
 
 struct Class {
 	size_t size;
-	void *(* ctor)(void *self, va_list *ap);
-	void *(* dtor)(void *self);
-	void *(* clone)(const void *self);
-	char *(* to_string)(const void *self);
+	const struct Class *class;
+	const struct Class *super;
+	const struct VTable *v;
 };
 
 void *new(const void *_class, ...);
 void delete(void *_self);
 void *clone(const void *_self);
+char *str(const void *_self);
+size_t hash(const void *_self);
+
+const void *super(const void *_self);
 size_t size_of(const void *_self);
-char *to_string(const void *_self);
+const void *class_of(const void *_self);
+bool is_a(const void *_self, const void *_class);
+bool is_of(const void *_self, const void *_class);
 
 #endif /* OOC_CLASS_H */

@@ -15,10 +15,10 @@ void *new(const void *_class, ...)
 	   setting that */
 	*(const struct Class **)self = class;
 
-	if (class->ctor) {
+	if (class->v->ctor) {
 		va_list ap;
 		va_start(ap, _class);
-		self = class->ctor(self, &ap);
+		self = class->v->ctor(self, &ap);
 		va_end(ap);
 	}
 
@@ -27,32 +27,82 @@ void *new(const void *_class, ...)
 
 void delete(void *_self)
 {
-	const struct Class **cp = _self;
-	if (_self && *cp && (*cp)->dtor) {
-		_self = (* cp)->dtor(_self);
+	const struct Class **class = _self;
+	if (_self && *class && (*class)->v->dtor) {
+		_self = (* class)->v->dtor(_self);
 		free(_self);
 	}
 }
 
-void *clone(const void *_self)
+const void *super(const void *_self)
 {
-	const struct Class *const *cp = _self;
-	assert(_self && *cp);
-	assert((*cp)->clone);
-	return (*cp)->clone(_self);
+	const struct Class *const *class = _self;
+	assert(_self && (*class));
+	assert((*class)->super);
+	return (*class)->super;
 }
 
 size_t size_of(const void *_self)
 {
-	const struct Class *const *cp = _self;
-	assert(_self && *cp);
-	return (*cp)->size;
+	const struct Class *const *class = _self;
+	assert(_self && *class);
+	return (*class)->size;
 }
 
-char *to_string(const void *_self)
+const void *class_of(const void *_self)
 {
-	const struct Class *const *cp = _self;
-	assert(_self && *cp);
-	assert((*cp)->to_string);
-	return (*cp)->to_string(_self);
+	const struct Class *const *class = _self;
+	assert(_self && *class);
+	assert((*class)->class);
+	return (*class)->class;
+}
+
+bool is_a(const void *_self, const void *_class)
+{
+	return _self && class_of(_self);
+}
+
+bool is_of(const void *_self, const void *_class)
+{
+	assert(_class);
+	
+	if (_self) {
+		const struct Class *class = class_of(_self);
+		if (class != NULL) {
+			while (class != _class) {
+				if (class != NULL) {
+					class = super(class);
+				}
+				else {
+					return 0;
+				}
+			}
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void *clone(const void *_self)
+{
+	const struct Class *const *class = _self;
+	assert(_self && *class);
+	assert((*class)->v->clone);
+	return (*class)->v->clone(_self);
+}
+
+char *str(const void *_self)
+{
+	const struct Class *const *class = _self;
+	assert(_self && *class);
+	assert((*class)->v->str);
+	return (*class)->v->str(_self);
+}
+
+size_t hash(const void *_self)
+{
+	const struct Class *const *class = _self;
+	assert(_self && *class);
+	assert((*class)->v->hash);
+	return (*class)->v->hash(_self);
 }
