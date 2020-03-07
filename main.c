@@ -8,11 +8,11 @@ int main(void)
 	void *a = new(String, "Hello, World!");
 
 	printf("a = %s\n", str(a));
-	void *c = clone(a);
+	void *c = copy(a);
 	printf("c = %s\n", str(c));
 
-	delete(a);
-	delete(c);
+	del(a);
+	del(c);
 
 	return 0;
 }

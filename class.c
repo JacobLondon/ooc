@@ -15,23 +15,30 @@ void *new(const void *_class, ...)
 	   setting that */
 	*(const struct Class **)self = class;
 
-	if (class->ctor) {
+	if (class->new) {
 		va_list ap;
 		va_start(ap, _class);
-		self = class->ctor(self, &ap);
+		self = class->new(self, &ap);
 		va_end(ap);
 	}
 
 	return self;
 }
 
-void delete(void *_self)
+void del(void *_self)
 {
 	const struct Class **class = _self;
-	if (_self && *class && (*class)->dtor) {
-		_self = (* class)->dtor(_self);
+	if (_self && *class && (*class)->del) {
+		_self = (* class)->del(_self);
 		free(_self);
 	}
+}
+
+size_t size_of(const void *_self)
+{
+	const struct Class *const *class = _self;
+	assert(_self && *class);
+	return (*class)->size;
 }
 
 const void *super(const void *_self)
@@ -42,14 +49,7 @@ const void *super(const void *_self)
 	return (*class)->super;
 }
 
-size_t size_of(const void *_self)
-{
-	const struct Class *const *class = _self;
-	assert(_self && *class);
-	return (*class)->size;
-}
-
-const void *class_of(const void *_self)
+const void *type(const void *_self)
 {
 	const struct Class *const *class = _self;
 	assert(_self && *class);
@@ -57,12 +57,12 @@ const void *class_of(const void *_self)
 	return (*class)->class;
 }
 
-bool is_a(const void *_self, const void *_class)
+bool isinstance(const void *_self, const void *_class)
 {
 	return _self && class_of(_self);
 }
 
-bool is_of(const void *_self, const void *_class)
+bool issubclass(const void *_self, const void *_class)
 {
 	assert(_class);
 	
@@ -83,12 +83,12 @@ bool is_of(const void *_self, const void *_class)
 	return false;
 }
 
-void *clone(const void *_self)
+void *copy(const void *_self)
 {
 	const struct Class *const *class = _self;
 	assert(_self && *class);
-	assert((*class)->clone);
-	return (*class)->clone(_self);
+	assert((*class)->copy);
+	return (*class)->copy(_self);
 }
 
 char *str(const void *_self)

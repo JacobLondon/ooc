@@ -5,12 +5,31 @@
 #include "class.h"
 #include "string.h"
 
-static void *String_ctor(void *_self, va_list *ap);
-static void *String_dtor(void *_self);
-static void *String_clone(const void *_self);
+/* class methods */
+static void *String_new(void *_self, va_list *ap);
+static void *String_del(void *_self);
+static void *String_copy(const void *_self);
+static size_t String_len(const void *_self);
 static char *String_str(const void *_self);
 
-static void *String_ctor(void *_self, va_list *ap)
+/* methods */
+
+static const struct Class _String = {
+	.size = sizeof(struct String),
+	.class = &_String,
+	.super = NULL,
+
+	.new = String_new,
+	.del = String_del,
+	.copy = String_copy,
+	.hash = NULL,
+	.len = String_len,
+	.str = String_str,
+};
+
+const void *String = &_String;
+
+static void *String_new(void *_self, va_list *ap)
 {
 	struct String *self = _self;
 	const char *text = va_arg(*ap, const char *);
@@ -22,7 +41,7 @@ static void *String_ctor(void *_self, va_list *ap)
 	return self;
 }
 
-static void *String_dtor(void *_self)
+static void *String_del(void *_self)
 {
 	struct String *self = _self;
 	free(self->text);
@@ -30,10 +49,16 @@ static void *String_dtor(void *_self)
 	return self;
 }
 
-static void *String_clone(const void *_self)
+static void *String_copy(const void *_self)
 {
 	const struct String *self = _self;
 	return new(String, self->text);
+}
+
+static size_t String_len(const void *_self)
+{
+	const struct String *self = _self;
+	return strlen(self->text);
 }
 
 static char *String_str(const void *_self)
@@ -41,17 +66,3 @@ static char *String_str(const void *_self)
 	const struct String *self = _self;
 	return self->text;
 }
-
-static const struct Class _String = {
-	.size = sizeof(struct String),
-	.class = &_String,
-	.super = NULL,
-
-	.ctor = String_ctor,
-	.dtor = String_dtor,
-	.clone = String_clone,
-	.str = String_str,
-	.hash = NULL,
-};
-
-const void *String = &_String;
