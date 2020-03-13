@@ -20,12 +20,12 @@ static const struct Class _Dict = {
 	.class = &_Dict,
 	.super = NULL,
 
-	.new = Dict_new,
-	.del = Dict_del,
-	.copy = NULL,
-	.hash = NULL,
-	.len = NULL,
-	.str = NULL,
+	.New = Dict_new,
+	.Del = Dict_del,
+	.Copy = NULL,
+	.Hash = NULL,
+	.Len = NULL,
+	.Str = NULL,
 };
 
 const void *Dict = &_Dict;
@@ -40,7 +40,7 @@ static void *Dict_new(void *_self, va_list *ap)
 	self->keys = calloc(DICT_DEFAULT_CAP, sizeof(void *));
 	assert(self->keys);
 
-	self->len = 0;
+	self->Len = 0;
 	self->cap = DICT_DEFAULT_CAP;
 
 	return self;
@@ -53,8 +53,8 @@ static void *Dict_del(void *_self)
 
 	for (i = 0; i < self->cap; i++) {
 		if (self->keys[i] != NULL) {
-			del(self->keys[i]);
-			del(self->values[i]);
+			Del(self->keys[i]);
+			Del(self->values[i]);
 		}
 	}
 

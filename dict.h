@@ -5,7 +5,7 @@ struct Dict {
 	const void *class;
 	void **values;
 	void **keys;
-	size_t len;
+	size_t Len;
 	size_t cap;
 };
 
