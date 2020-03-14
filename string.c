@@ -31,6 +31,7 @@ static void *String_add(const void *_self, const void *_other);
 static void *String_iadd(void *_self, const void *_other);
 
 // representation
+static size_t String_hash(const void *_self);
 static char *String_str(const void *_self);
 static ssize_t String_int(const void *_self);
 static double String_float(const void *_self);
@@ -110,7 +111,7 @@ static const struct Class class = {
 	.Ixor = NULL,
 
 	// representation
-	.Hash = NULL,
+	.Hash = String_hash,
 	.Str = String_str,
 	.Repr = NULL,
 	.Int = String_int,
@@ -182,20 +183,12 @@ static ssize_t String_cmp(const void *_self, const void *_other)
 
 static bool String_eq(const void *_self, const void *_other)
 {
-	const struct String *self = _self;
-	const struct String *other = _other;
-	assert(self->class == String.Class);
-	assert(other->class == String.Class);
-	return strcmp(self->text, other->text) == 0;
+	return String_cmp(_self, _other) == 0;
 }
 
 static bool String_ne(const void *_self, const void *_other)
 {
-	const struct String *self = _self;
-	const struct String *other = _other;
-	assert(self->class == String.Class);
-	assert(other->class == String.Class);
-	return strcmp(self->text, other->text) != 0;
+	return !String_eq(_self, _other);
 }
 
 /**********************************************************
@@ -246,6 +239,25 @@ static void *String_iadd(void *_self, const void *_other)
 /**********************************************************
  * Representation
  **********************************************************/
+
+static size_t String_hash(const void *_self)
+{
+	const struct String *self = _self;
+	assert(self->class == String.Class);
+	char *p = self->text;
+
+	#define FNV1A_PRIME 0x01000193
+	#define FNV1A_SEED  0x811C9DC5
+
+	size_t hash = FNV1A_SEED;
+	while (*p) {
+		hash = (*p++ ^ hash) * FNV1A_PRIME;
+	}
+	return hash;
+
+	#undef FNV1A_PRIME
+	#undef FNV1A_SEED
+}
 
 static char *String_str(const void *_self)
 {

@@ -2,6 +2,7 @@ TARGET=test
 CC=gcc
 OBJS=\
 	class.o \
+	dict.o \
 	main.o \
 	string.o
 

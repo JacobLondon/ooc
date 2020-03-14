@@ -106,7 +106,8 @@ void *Copy(const void *_self)
 ssize_t Cmp(const void *_self, const void *_other)
 {
 	const struct Class *const *self = _self;
-	assert(_self && *self && _other);
+	assert(_self && *self);
+	assert(_other);
 	assert((*self)->Cmp);
 	return (*self)->Cmp(_self, _other);
 }
@@ -114,11 +115,12 @@ ssize_t Cmp(const void *_self, const void *_other)
 bool Eq(const void *_self, const void *_other)
 {
 	const struct Class *const *self = _self;
-	assert(_self && *self && _other);
+	assert(_self && *self);
+	assert(_other);
 	assert((*self)->Eq);
 	return (*self)->Eq(_self, _other);
 }
-
+// TODO: change assertions to follow above format
 bool Ne(const void *_self, const void *_other)
 {
 	const struct Class *const *self = _self;
@@ -503,7 +505,9 @@ void *Getitem(const void *_self, const void *_key)
 void Setitem(const void *_self, const void *_key, const void *_value)
 {
 	const struct Class *const *self = _self;
-	assert(_self && *self && _key && _value);
+	const struct Class *const *value = _value;
+	assert(_self && *self && _key && _value && *value);
+	assert((*value)->Copy);
 	assert((*self)->Setitem);
 	(*self)->Setitem(_self, _key, _value);
 }
