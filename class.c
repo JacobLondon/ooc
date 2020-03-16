@@ -502,9 +502,9 @@ void *Getitem(const void *_self, const void *_key)
 	return (*self)->Getitem(_self, _key);
 }
 
-void Setitem(const void *_self, const void *_key, const void *_value)
+void Setitem(void *_self, const void *_key, const void *_value)
 {
-	const struct Class *const *self = _self;
+	struct Class **self = _self;
 	const struct Class *const *value = _value;
 	assert(_self && *self && _key && _value && *value);
 	assert((*value)->Copy);
@@ -512,9 +512,9 @@ void Setitem(const void *_self, const void *_key, const void *_value)
 	(*self)->Setitem(_self, _key, _value);
 }
 
-void Delitem(const void *_self, const void *_key)
+void Delitem(const *_self, const void *_key)
 {
-	const struct Class *const *self = _self;
+	struct Class **self = _self;
 	assert(_self && *self && _key);
 	assert((*self)->Delitem);
 	(*self)->Delitem(_self, _key);

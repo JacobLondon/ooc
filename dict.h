@@ -9,12 +9,14 @@ struct Dict {
 	size_t cap;
 };
 
-struct Namespace_dict {
-	const void *Class;
-	size_t (* Hash)(const void *_self, const void *_key);
-	void *(* Grow)(void *_self, size_t mod);
+struct NamespaceDict {
+	const void *class;
+	void (* clear)(void *_self);
+	void *(* reserve)(void *_self, size_t mod);
+	void (* shrink_to_fit)(void *_self);
+	size_t (* hash)(const void *_self, const void *_key);
 };
 
-extern struct Namespace_dict Dict;
+extern struct NamespaceDict Dict;
 
 #endif /* OOC_DICT_H */

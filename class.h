@@ -69,14 +69,15 @@ struct Class {
 	char *(* Str)(const void *_self);
 	char *(* Repr)(const void *_self);
 	ssize_t (* Int)(const void *_self);
+	size_t (* Uint)(const void *_self);
 	double (* Float)(const void *_self);
 	bool (* Bool)(const void *_self);
 
 	// containers
 	size_t (* Len)(const void *_self);
 	void *(* Getitem)(const void *_self, const void *_key);
-	void (* Setitem)(const void *_self, const void *_key, const void *_value);
-	void (* Delitem)(const void *_self, const void *_key);
+	void (* Setitem)(void *_self, const void *_key, const void *_value);
+	void (* Delitem)(void *_self, const void *_key);
 	void *(* Iter)(const void *_self);
 	void *(* Reversed)(const void *_self);
 	bool (* Contains)(const void *_self, const void *_other);
@@ -146,14 +147,15 @@ size_t Hash(const void *_self);
 char *Str(const void *_self);
 char *Repr(const void *_self);
 ssize_t Int(const void *_self);
+size_t Uint(const void *_self);
 double Float(const void *_self);
 bool Bool(const void *_self);
 
 // containers
 size_t Len(const void *_self);
 void *Getitem(const void *_self, const void *_key);
-void Setitem(const void *_self, const void *_key, const void *_value);
-void Delitem(const void *_self, const void *_key);
+void Setitem(void *_self, const void *_key, const void *_value);
+void Delitem(void *_self, const void *_key);
 void *Iter(const void *_self);
 void *Reversed(const void *_self);
 bool Contains(const void *_self, const void *_other);
@@ -221,6 +223,7 @@ static const struct Class class = {
 	.Str = NULL,
 	.Repr = NULL,
 	.Int = NULL,
+	.Uint = NULL,
 	.Float = NULL,
 	.Bool = NULL,
 
