@@ -2,6 +2,6 @@
 Reading Object-Oriented Programming with ANSI-C
 
 # To Do
-- Lowercase namespace items
-- Uppercase global items
+- Make Namespace Class uppercase
+- Make new super class called Container to seperate from Type
 - String add/iadd to namespace
