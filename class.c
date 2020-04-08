@@ -512,7 +512,7 @@ void Setitem(void *_self, const void *_key, const void *_value)
 	(*self)->Setitem(_self, _key, _value);
 }
 
-void Delitem(const *_self, const void *_key)
+void Delitem(void *_self, const void *_key)
 {
 	struct Class **self = _self;
 	assert(_self && *self && _key);

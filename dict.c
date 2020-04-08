@@ -128,10 +128,10 @@ static const struct Class class = {
 };
 
 struct NamespaceDict Dict = {
-	.class = &class,
-	.hash = NamespaceDict_hash,
-	.reserve = NamespaceDict_reserve,
-	.shrink_to_fit = NULL,
+	.Class = &class,
+	.Hash = NamespaceDict_hash,
+	.Reserve = NamespaceDict_reserve,
+	.Shrink_to_fit = NULL,
 };
 
 /**********************************************************
@@ -141,7 +141,7 @@ struct NamespaceDict Dict = {
 static void *Dict_new(void *_self, va_list *ap)
 {
 	struct Dict *self = _self;
-	assert(self->class == Dict.class);
+	assert(self->class == Dict.Class);
 
 	self->values = calloc(DICT_DEFAULT_CAP, sizeof(void *));
 	assert(self->values);
@@ -157,7 +157,7 @@ static void *Dict_new(void *_self, va_list *ap)
 static void *Dict_del(void *_self)
 {
 	struct Dict *self = _self;
-	assert(self->class == Dict.class);
+	assert(self->class == Dict.Class);
 
 	for (size_t i = 0; i < self->cap; i++) {
 		if (self->keys[i]) {
@@ -177,8 +177,8 @@ static void *Dict_del(void *_self)
 static void *Dict_copy(const void *_self)
 {
 	const struct Dict *self = _self;
-	assert(self->class == Dict.class);
-	void *_new = New(Dict.class);
+	assert(self->class == Dict.Class);
+	void *_new = New(Dict.Class);
 	struct Dict *new = _new;
 	void *tmp;
 
@@ -206,8 +206,8 @@ static bool Dict_eq(const void *_self, const void *_other)
 {
 	const struct Dict *self = _self;
 	const struct Dict *other = _other;
-	assert(self->class == Dict.class);
-	assert(other->class == Dict.class);
+	assert(self->class == Dict.Class);
+	assert(other->class == Dict.Class);
 
 	if (self->size != other->size || self->cap != other->cap) {
 		return false;
@@ -252,7 +252,7 @@ static char *Dict_str(const void *_self)
 static bool Dict_bool(const void *_self)
 {
 	const struct Dict *self = _self;
-	assert(self->class == Dict.class);
+	assert(self->class == Dict.Class);
 	return self->size > 0;
 }
 
@@ -263,23 +263,23 @@ static bool Dict_bool(const void *_self)
 static size_t Dict_len(const void *_self)
 {
 	const struct Dict *self = _self;
-	assert(self->class == Dict.class);
+	assert(self->class == Dict.Class);
 	return self->size;
 }
 
 static void *Dict_getitem(const void *_self, const void *_key)
 {
 	const struct Dict *self = _self;
-	assert(self->class == Dict.class);
-	size_t index = Dict.hash(self, _key);
+	assert(self->class == Dict.Class);
+	size_t index = Dict.Hash(self, _key);
 	return self->values[index];
 }
 
 static void Dict_setitem(void *_self, const void *_key, const void *_value)
 {
 	struct Dict *self = _self;
-	assert(self->class == Dict.class);
-	size_t index = Dict.hash(self, _key);
+	assert(self->class == Dict.Class);
+	size_t index = Dict.Hash(self, _key);
 	self->values[index] = Copy(_value);
 	self->keys[index] = Copy(_key);
 }
@@ -287,8 +287,8 @@ static void Dict_setitem(void *_self, const void *_key, const void *_value)
 static void Dict_delitem(void *_self, const void *_key)
 {
 	struct Dict *self = _self;
-	assert(self->class == Dict.class);
-	size_t index = Dict.hash(self, _key);
+	assert(self->class == Dict.Class);
+	size_t index = Dict.Hash(self, _key);
 	Del(self->values[index]);
 	Del(self->keys[index]);
 }
@@ -297,8 +297,8 @@ static bool Dict_contains(const void *_self, const void *_other)
 {
 	const struct Dict *self = _self;
 	const struct Class *const *other = _other;
-	assert(self->class == Dict.class);
-	size_t index = Dict.hash(self, _other);
+	assert(self->class == Dict.Class);
+	size_t index = Dict.Hash(self, _other);
 	return Eq(self->keys[index], _other);
 }
 
@@ -310,7 +310,7 @@ static size_t NamespaceDict_hash(const void *_self, const void *_key)
 {
 	const struct Dict *self = _self;
 	const struct Class *const *key = _key;
-	assert(self->class == Dict.class);
+	assert(self->class == Dict.Class);
 	assert(_key && *key);
 	assert((*key)->Hash && (*key)->Ne);
 	
@@ -327,7 +327,7 @@ static void *NamespaceDict_reserve(void *_self, size_t mod)
 	struct Dict *self = _self;
 	assert(_self);
 	assert(mod >= 1);
-	assert(self->class == Dict.class);
+	assert(self->class == Dict.Class);
 
 	// swap data
 	void **oldvals = self->values;
@@ -342,7 +342,7 @@ static void *NamespaceDict_reserve(void *_self, size_t mod)
 
 	for (size_t index, i = 0; i < oldcap; i++) {
 		if (oldkeys[i]) {
-			index = Dict.hash(self, oldkeys[i]);
+			index = Dict.Hash(self, oldkeys[i]);
 
 			// move value
 			self->values[index] = oldvals[i];

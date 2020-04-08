@@ -131,10 +131,10 @@ static const struct Class class = {
 };
 
 struct NamespaceString String = {
-	.class = &class,
-	.cstr = NamespaceString_cstr,
-	.find = NamespaceString_find,
-	.substring = NamespaceString_substring,
+	.Class = &class,
+	.Cstr = NamespaceString_cstr,
+	.Find = NamespaceString_find,
+	.Substring = NamespaceString_substring,
 };
 
 /**********************************************************
@@ -144,7 +144,7 @@ struct NamespaceString String = {
 static void *String_new(void *_self, va_list *ap)
 {
 	struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	const char *text = va_arg(*ap, const char *);
 
 	self->text = calloc(strlen(text) + 1, sizeof(char));
@@ -157,7 +157,7 @@ static void *String_new(void *_self, va_list *ap)
 static void *String_del(void *_self)
 {
 	struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	free(self->text);
 	self->text = NULL;
 	return self;
@@ -166,8 +166,8 @@ static void *String_del(void *_self)
 static void *String_copy(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
-	return New(String.class, self->text);
+	assert(self->class == String.Class);
+	return New(String.Class, self->text);
 }
 
 /**********************************************************
@@ -178,8 +178,8 @@ static ssize_t String_cmp(const void *_self, const void *_other)
 {
 	const struct String *self = _self;
 	const struct String *other = _other;
-	assert(self->class == String.class);
-	assert(other->class == String.class);
+	assert(self->class == String.Class);
+	assert(other->class == String.Class);
 	return (ssize_t)strcmp(self->text, other->text);
 }
 
@@ -205,15 +205,15 @@ static void *String_add(const void *_self, const void *_other)
 {
 	const struct String *self = _self;
 	const struct String *other = _other;
-	assert(self->class == String.class);
-	assert(other->class == String.class);
+	assert(self->class == String.Class);
+	assert(other->class == String.Class);
 
 	size_t count = strlen(self->text) + strlen(other->text) + 1;
 	char *text = calloc(count, sizeof(char));
 	assert(text);
 	strcat(text, self->text);
 	strcat(text, other->text);
-	void *new = New(String.class, text);
+	void *new = New(String.Class, text);
 	free(text);
 	return new;
 }
@@ -226,8 +226,8 @@ static void *String_iadd(void *_self, const void *_other)
 {
 	struct String *self = _self;
 	const struct String *other = _other;
-	assert(self->class == String.class);
-	assert(other->class == String.class);
+	assert(self->class == String.Class);
+	assert(other->class == String.Class);
 
 	size_t count = strlen(self->text) + strlen(other->text);
 	char *tmp = realloc(self->text, count + 1);
@@ -245,7 +245,7 @@ static void *String_iadd(void *_self, const void *_other)
 static size_t String_hash(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	char *p = self->text;
 
 	#define FNV1A_PRIME 0x01000193
@@ -264,7 +264,7 @@ static size_t String_hash(const void *_self)
 static char *String_str(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	char *text = strdup(self->text);
 	assert(text);
 	return text;
@@ -273,7 +273,7 @@ static char *String_str(const void *_self)
 static ssize_t String_int(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	ssize_t retval;
 	if (sscanf(self->text, "%zd", &retval) != 1) {
 		return SSIZE_MAX;
@@ -284,10 +284,10 @@ static ssize_t String_int(const void *_self)
 static size_t String_uint(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	ssize_t retval;
 	if (sscanf(self->text, "%zu", &retval) != 1) {
-		return SIZE_MAX;
+		return SSIZE_MAX;
 	}
 	return retval;
 }
@@ -295,7 +295,7 @@ static size_t String_uint(const void *_self)
 static double String_float(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	double retval;
 	if (sscanf(self->text, "%lf", &retval) != 1) {
 		return DBL_MAX;
@@ -306,7 +306,7 @@ static double String_float(const void *_self)
 static bool String_bool(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	if (strlen(self->text) > 0) {
 		return true;
 	}
@@ -320,7 +320,7 @@ static bool String_bool(const void *_self)
 static size_t String_len(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	return strlen(self->text);
 }
 
@@ -328,8 +328,8 @@ static bool String_contains(const void *_self, const void *_other)
 {
 	const struct String *self = _self;
 	const struct String *other = _other;
-	assert(self->class == String.class);
-	assert(other->class == String.class);
+	assert(self->class == String.Class);
+	assert(other->class == String.Class);
 
 	if (strstr(self->text, other->text) != NULL) {
 		return true;
@@ -344,7 +344,7 @@ static bool String_contains(const void *_self, const void *_other)
 static char *NamespaceString_cstr(const void *_self)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	return self->text;
 }
 
@@ -352,18 +352,18 @@ static ptrdiff_t NamespaceString_find(const void *_self, const char *substr)
 {
 	const struct String *self = _self;
 	assert(self && substr);
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	return (ptrdiff_t)(strstr(self->text, substr) - self->text);
 }
 
 static void *NamespaceString_substring(const void *_self, size_t start, size_t length)
 {
 	const struct String *self = _self;
-	assert(self->class == String.class);
+	assert(self->class == String.Class);
 	char *text = calloc(length, sizeof(char));
 	assert(text);
 	strncat(text, &self->text[start], length + 1);
-	void *new = New(String.class, text);
+	void *new = New(String.Class, text);
 	free(text);
 	return new;
 }

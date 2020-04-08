@@ -10,11 +10,11 @@ struct Dict {
 };
 
 struct NamespaceDict {
-	const void *class;
-	void (* clear)(void *_self);
-	void *(* reserve)(void *_self, size_t mod);
-	void (* shrink_to_fit)(void *_self);
-	size_t (* hash)(const void *_self, const void *_key);
+	const void *Class;
+	void (* Clear)(void *_self);
+	void *(* Reserve)(void *_self, size_t mod);
+	void (* Shrink_to_fit)(void *_self);
+	size_t (* Hash)(const void *_self, const void *_key);
 };
 
 extern struct NamespaceDict Dict;

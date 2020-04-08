@@ -9,11 +9,11 @@ struct String {
 };
 
 struct NamespaceString {
-	const void *class;
-	void (* clear)(void *_self);
-	char *(* cstr)(const void *_self);
-	ptrdiff_t (* find)(const void *_self, const char *substr);
-	void *(* substring)(const void *_self, size_t start, size_t length);
+	const void *Class;
+	void (* Clear)(void *_self);
+	char *(* Cstr)(const void *_self);
+	ptrdiff_t (* Find)(const void *_self, const char *substr);
+	void *(* Substring)(const void *_self, size_t start, size_t length);
 };
 
 extern struct NamespaceString String;
