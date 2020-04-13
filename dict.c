@@ -14,13 +14,13 @@
  **********************************************************/
 
 // construction
-static void *Dict_new(void *_self, va_list *ap);
-static void *Dict_del(void *_self);
-static void *Dict_copy(const void *_self);
+static void *Dict_New(void *_self, va_list *ap);
+static void *Dict_Del(void *_self);
+static void *Dict_Copy(const void *_self);
 
 // comparison
-static bool Dict_eq(const void *_self, const void *_other);
-static bool Dict_ne(const void *_self, const void *_other);
+static bool Dict_Eq(const void *_self, const void *_other);
+static bool Dict_Ne(const void *_self, const void *_other);
 
 // unary
 
@@ -29,22 +29,22 @@ static bool Dict_ne(const void *_self, const void *_other);
 // assignment arithmetic
 
 // representation
-static char *Dict_str(const void *_self);
-static bool Dict_bool(const void *_self);
+static char *Dict_Str(const void *_self);
+static bool Dict_Bool(const void *_self);
 
 // containers
-static size_t Dict_len(const void *_self);
-static void *Dict_getitem(const void *_self, const void *_key);
-static void Dict_setitem(void *_self, const void *_key, const void *_value);
-static void Dict_delitem(void *_self, const void *_key);
-static bool Dict_contains(const void *_self, const void *_other);
+static size_t Dict_Len(const void *_self);
+static void *Dict_Getitem(const void *_self, const void *_key);
+static void Dict_Setitem(void *_self, const void *_key, const void *_value);
+static void Dict_Delitem(void *_self, const void *_key);
+static bool Dict_Contains(const void *_self, const void *_other);
 
 /**********************************************************
  * Namespace Function Prototypes
  **********************************************************/
 
-static void *NamespaceDict_reserve(void *_self, size_t mod);
-static size_t NamespaceDict_hash(const void *_self, const void *_key);
+static void *NamespaceDict_Reserve(void *_self, size_t mod);
+static size_t NamespaceDict_Hash(const void *_self, const void *_key);
 
 
 /**********************************************************
@@ -57,14 +57,14 @@ static const struct Class class = {
 	.super = NULL,
 
 	// construction
-	.New = Dict_new,
-	.Del = Dict_del,
+	.New = Dict_New,
+	.Del = Dict_Del,
 	.Copy = NULL,
 
 	// comparison
 	.Cmp = NULL,
-	.Eq  = Dict_eq,
-	.Ne  = Dict_ne,
+	.Eq  = Dict_Eq,
+	.Ne  = Dict_Ne,
 	.Lt  = NULL,
 	.Gt  = NULL,
 	.Le  = NULL,
@@ -110,27 +110,27 @@ static const struct Class class = {
 
 	// representation
 	.Hash = NULL,
-	.Str = Dict_str,
+	.Str = Dict_Str,
 	.Repr = NULL,
 	.Int = NULL,
 	.Uint = NULL,
 	.Float = NULL,
-	.Bool = Dict_bool,
+	.Bool = Dict_Bool,
 
 	// containers
-	.Len = Dict_len,
-	.Getitem = Dict_getitem,
-	.Setitem = Dict_setitem,
-	.Delitem = Dict_delitem,
+	.Len = Dict_Len,
+	.Getitem = Dict_Getitem,
+	.Setitem = Dict_Setitem,
+	.Delitem = Dict_Delitem,
 	.Iter = NULL,
 	.Reversed = NULL,
-	.Contains = Dict_contains,
+	.Contains = Dict_Contains,
 };
 
 struct NamespaceDict Dict = {
 	.Class = &class,
-	.Hash = NamespaceDict_hash,
-	.Reserve = NamespaceDict_reserve,
+	.Hash = NamespaceDict_Hash,
+	.Reserve = NamespaceDict_Reserve,
 	.Shrink_to_fit = NULL,
 };
 
@@ -138,7 +138,7 @@ struct NamespaceDict Dict = {
  * Construction
  **********************************************************/
 
-static void *Dict_new(void *_self, va_list *ap)
+static void *Dict_New(void *_self, va_list *ap)
 {
 	struct Dict *self = _self;
 	assert(self->class == Dict.Class);
@@ -154,7 +154,7 @@ static void *Dict_new(void *_self, va_list *ap)
 	return self;
 }
 
-static void *Dict_del(void *_self)
+static void *Dict_Del(void *_self)
 {
 	struct Dict *self = _self;
 	assert(self->class == Dict.Class);
@@ -174,11 +174,11 @@ static void *Dict_del(void *_self)
 	return self;
 }
 
-static void *Dict_copy(const void *_self)
+static void *Dict_Copy(const void *_self)
 {
 	const struct Dict *self = _self;
 	assert(self->class == Dict.Class);
-	void *_new = New(Dict.Class);
+	void *_new = New(Dict.Class, Pass);
 	struct Dict *new = _new;
 	void *tmp;
 
@@ -202,7 +202,7 @@ static void *Dict_copy(const void *_self)
  * Comparison
  **********************************************************/
 
-static bool Dict_eq(const void *_self, const void *_other)
+static bool Dict_Eq(const void *_self, const void *_other)
 {
 	const struct Dict *self = _self;
 	const struct Dict *other = _other;
@@ -223,9 +223,9 @@ static bool Dict_eq(const void *_self, const void *_other)
 	return true;
 }
 
-static bool Dict_ne(const void *_self, const void *_other)
+static bool Dict_Ne(const void *_self, const void *_other)
 {
-	return !Dict_eq(_self, _other);
+	return !Dict_Eq(_self, _other);
 }
 
 /**********************************************************
@@ -244,12 +244,12 @@ static bool Dict_ne(const void *_self, const void *_other)
  * Representation
  **********************************************************/
 
-static char *Dict_str(const void *_self)
+static char *Dict_Str(const void *_self)
 {
 	return "TODO";
 }
 
-static bool Dict_bool(const void *_self)
+static bool Dict_Bool(const void *_self)
 {
 	const struct Dict *self = _self;
 	assert(self->class == Dict.Class);
@@ -260,14 +260,14 @@ static bool Dict_bool(const void *_self)
  * Containers
  **********************************************************/
 
-static size_t Dict_len(const void *_self)
+static size_t Dict_Len(const void *_self)
 {
 	const struct Dict *self = _self;
 	assert(self->class == Dict.Class);
 	return self->size;
 }
 
-static void *Dict_getitem(const void *_self, const void *_key)
+static void *Dict_Getitem(const void *_self, const void *_key)
 {
 	const struct Dict *self = _self;
 	assert(self->class == Dict.Class);
@@ -275,7 +275,7 @@ static void *Dict_getitem(const void *_self, const void *_key)
 	return self->values[index];
 }
 
-static void Dict_setitem(void *_self, const void *_key, const void *_value)
+static void Dict_Setitem(void *_self, const void *_key, const void *_value)
 {
 	struct Dict *self = _self;
 	assert(self->class == Dict.Class);
@@ -284,7 +284,7 @@ static void Dict_setitem(void *_self, const void *_key, const void *_value)
 	self->keys[index] = Copy(_key);
 }
 
-static void Dict_delitem(void *_self, const void *_key)
+static void Dict_Delitem(void *_self, const void *_key)
 {
 	struct Dict *self = _self;
 	assert(self->class == Dict.Class);
@@ -293,7 +293,7 @@ static void Dict_delitem(void *_self, const void *_key)
 	Del(self->keys[index]);
 }
 
-static bool Dict_contains(const void *_self, const void *_other)
+static bool Dict_Contains(const void *_self, const void *_other)
 {
 	const struct Dict *self = _self;
 	const struct Class *const *other = _other;
@@ -306,7 +306,7 @@ static bool Dict_contains(const void *_self, const void *_other)
  * Namespace Functions
  **********************************************************/
 
-static size_t NamespaceDict_hash(const void *_self, const void *_key)
+static size_t NamespaceDict_Hash(const void *_self, const void *_key)
 {
 	const struct Dict *self = _self;
 	const struct Class *const *key = _key;
@@ -322,7 +322,7 @@ static size_t NamespaceDict_hash(const void *_self, const void *_key)
 	return index;
 }
 
-static void *NamespaceDict_reserve(void *_self, size_t mod)
+static void *NamespaceDict_Reserve(void *_self, size_t mod)
 {
 	struct Dict *self = _self;
 	assert(_self);

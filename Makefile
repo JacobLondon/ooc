@@ -1,5 +1,6 @@
 TARGET=test
 CC=gcc
+CFLAGS=-pipe -march=native -O2
 OBJS=\
 	class.o \
 	dict.o \
@@ -9,7 +10,7 @@ OBJS=\
 .PHONY: clean
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS)
 
 clean:
 	rm -rf *.o *.out $(TARGET) $(OBJS)

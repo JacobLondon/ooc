@@ -29,7 +29,7 @@ int main(void)
 	}
 
 	{
-		struct Dict *mydict = New(Dict.Class);
+		struct Dict *mydict = New(Dict.Class, Pass);
 
 		void *a = New(String.Class, "Hello");
 		void *b = New(String.Class, "There");

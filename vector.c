@@ -12,34 +12,34 @@
  **********************************************************/
 
 // construction
-static void *Vector_new(void *_self, va_list *ap);
-static void *Vector_del(void *_self);
-static void *Vector_copy(const void *_self);
+static void *Vector_New(void *_self, va_list *ap);
+static void *Vector_Del(void *_self);
+static void *Vector_Copy(const void *_self);
 
 // comparison
-static bool Vector_eq(const void *_self, const void *_other);
-static bool Vector_ne(const void *_self, const void *_other);
+static bool Vector_Eq(const void *_self, const void *_other);
+static bool Vector_Ne(const void *_self, const void *_other);
 
 // unary
 // arithmetic
 // assignment arithmetic
 
 // representation
-static char *Vector_str(const void *_self);
-static bool Vector_bool(const void *_self);
+static char *Vector_Str(const void *_self);
+static bool Vector_Bool(const void *_self);
 
 // containers
-static size_t Vector_len(const void *_self);
-static void *Vector_getitem(const void *_self, const void *_key);
-static void Vector_setitem(void *_self, const void *_key, const void *_value);
-static void Vector_delitem(void *_self, const void *_key);
-static bool Vector_contains(const void *_self, const void *_other);
+static size_t Vector_Len(const void *_self);
+static void *Vector_Getitem(const void *_self, const void *_key);
+static void Vector_Setitem(void *_self, const void *_key, const void *_value);
+static void Vector_Delitem(void *_self, const void *_key);
+static bool Vector_Contains(const void *_self, const void *_other);
 
 /**********************************************************
  * Namespace Function Prototypes
  **********************************************************/
 
-static void NamespaceVector_push_back(void *_self, const void *_value);
+static void NamespaceVector_Push_back(void *_self, const void *_value);
 
 
 /**********************************************************
@@ -52,14 +52,14 @@ static const struct Class class = {
 	.super = NULL,
 
 	// construction
-	.New = Vector_new,
-	.Del = Vector_del,
-	.Copy = Vector_copy,
+	.New = Vector_New,
+	.Del = Vector_Del,
+	.Copy = Vector_Copy,
 
 	// comparison
 	.Cmp = NULL,
-	.Eq  = Vector_eq,
-	.Ne  = Vector_ne,
+	.Eq  = Vector_Eq,
+	.Ne  = Vector_Ne,
 	.Lt  = NULL,
 	.Gt  = NULL,
 	.Le  = NULL,
@@ -105,36 +105,38 @@ static const struct Class class = {
 
 	// representation
 	.Hash = NULL,
-	.Str = Vector_str,
+	.Str = Vector_Str,
 	.Repr = NULL,
 	.Int = NULL,
 	.Uint = NULL,
 	.Float = NULL,
-	.Bool = Vector_bool,
+	.Bool = Vector_Bool,
 
 	// containers
-	.Len = Vector_len,
-	.Getitem = Vector_getitem,
-	.Setitem = Vector_setitem,
-	.Delitem = Vector_delitem,
+	.Len = Vector_Len,
+	.Getitem = Vector_Getitem,
+	.Setitem = Vector_Setitem,
+	.Delitem = Vector_Delitem,
 	.Iter = NULL,
 	.Reversed = NULL,
-	.Contains = Vector_contains,
+	.Contains = Vector_Contains,
 };
 
 struct NamespaceVector Vector = {
-	.class = &class,
-	.push_back = NamespaceVector_push_back,
-	.pop_back = NULL,
-	.insert = NULL,
-	.find = NULL,
+	.Class = &class,
+	.Clear = NULL,
+	.Shrink_to_fit = NULL,
+	.Push_back = NamespaceVector_Push_back,
+	.Pop_back = NULL,
+	.Insert = NULL,
+	.Find = NULL,
 };
 
 /**********************************************************
  * Construction
  **********************************************************/
 
-static void *Vector_new(void *_self, va_list *ap)
+static void *Vector_New(void *_self, va_list *ap)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -148,7 +150,7 @@ static void *Vector_new(void *_self, va_list *ap)
 	return self;
 }
 
-static void *Vector_del(void *_self)
+static void *Vector_Del(void *_self)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -165,15 +167,15 @@ static void *Vector_del(void *_self)
 	return self;
 }
 
-static void *Vector_copy(const void *_self)
+static void *Vector_Copy(const void *_self)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
-	void *_new = New(Vector.Class);
+	void *_new = New(Vector.Class, Pass);
 	struct Vector *new = _new;
 
 	for (size_t i = 0; i < self->size; i++) {
-		Vector.Append(new, self->buf[i]);
+		Vector.Push_back(new, self->buf[i]);
 	}
 
 	return new;
@@ -183,7 +185,7 @@ static void *Vector_copy(const void *_self)
  * Comparison
  **********************************************************/
 
-static bool Vector_eq(const void *_self, const void *_other)
+static bool Vector_Eq(const void *_self, const void *_other)
 {
 	const struct Vector *self = _self;
 	const struct Vector *other = _other;
@@ -202,9 +204,9 @@ static bool Vector_eq(const void *_self, const void *_other)
 	return true;
 }
 
-static bool Vector_ne(const void *_self, const void *_other)
+static bool Vector_Ne(const void *_self, const void *_other)
 {
-	return !Vector_eq(_self, _other);
+	return !Vector_Eq(_self, _other);
 }
 
 /**********************************************************
@@ -223,12 +225,12 @@ static bool Vector_ne(const void *_self, const void *_other)
  * Representation
  **********************************************************/
 
-static char *Vector_str(const void *_self)
+static char *Vector_Str(const void *_self)
 {
 	return "TODO";
 }
 
-static bool Vector_bool(const void *_self)
+static bool Vector_Bool(const void *_self)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -239,28 +241,28 @@ static bool Vector_bool(const void *_self)
  * Containers
  **********************************************************/
 
-static size_t Vector_len(const void *_self)
+static size_t Vector_Len(const void *_self)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	return self->size;
 }
 
-static void *Vector_getitem(const void *_self, const void *_key)
+static void *Vector_Getitem(const void *_self, const void *_key)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	return self->buf[Uint(_key)];
 }
 
-static void Vector_setitem(void *_self, const void *_key, const void *_value)
+static void Vector_Setitem(void *_self, const void *_key, const void *_value)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	self->buf[Uint(_key)] = Copy(_value);
 }
 
-static void Vector_delitem(void *_self, const void *_key)
+static void Vector_Delitem(void *_self, const void *_key)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -274,10 +276,10 @@ static void Vector_delitem(void *_self, const void *_key)
 	self->size--;
 }
 
-static bool Vector_contains(void *_self, const void *_other)
+static bool Vector_Contains(void *_self, const void *_other)
 {
 	struct Vector *self = _self;
-	struct Vector *self = _other;
+	struct Vector *other = _other;
 	assert(self->class == Vector.Class);
 	assert(other->class == Vector.Class);
 

@@ -13,42 +13,42 @@
  **********************************************************/
 
 // construction
-static void *String_new(void *_self, va_list *ap);
-static void *String_del(void *_self);
-static void *String_copy(const void *_self);
+static void *String_New(void *_self, va_list *ap);
+static void *String_Del(void *_self);
+static void *String_Copy(const void *_self);
 
 // comparison
-static ssize_t String_cmp(const void *_self, const void *_other);
-static bool String_eq(const void *_self, const void *_other);
-static bool String_ne(const void *_self, const void *_other);
+static ssize_t String_Cmp(const void *_self, const void *_other);
+static bool String_Eq(const void *_self, const void *_other);
+static bool String_Ne(const void *_self, const void *_other);
 
 // unary
 
 // arithmetic
-static void *String_add(const void *_self, const void *_other);
+static void *String_Add(const void *_self, const void *_other);
 
 // assignment arithmetic
-static void *String_iadd(void *_self, const void *_other);
+static void *String_Iadd(void *_self, const void *_other);
 
 // representation
-static size_t String_hash(const void *_self);
-static char *String_str(const void *_self);
-static ssize_t String_int(const void *_self);
-static size_t String_uint(const void *_self);
-static double String_float(const void *_self);
-static bool String_bool(const void *_self);
+static size_t String_Hash(const void *_self);
+static char *String_Str(const void *_self);
+static ssize_t String_Int(const void *_self);
+static size_t String_Uint(const void *_self);
+static double String_Float(const void *_self);
+static bool String_Bool(const void *_self);
 
 // containers
-static size_t String_len(const void *_self);
-static bool String_contains(const void *_self, const void *_other);
+static size_t String_Len(const void *_self);
+static bool String_Contains(const void *_self, const void *_other);
 
 /**********************************************************
  * Namespace Function Prototypes
  **********************************************************/
 
-static ptrdiff_t NamespaceString_find(const void *_self, const char *substr);
-static void *NamespaceString_substring(const void *_self, size_t start, size_t length);
-static char *NamespaceString_cstr(const void *_self);
+static ptrdiff_t NamespaceString_Find(const void *_self, const char *substr);
+static void *NamespaceString_Substring(const void *_self, size_t start, size_t length);
+static char *NamespaceString_Cstr(const void *_self);
 
 /**********************************************************
  * Definitions
@@ -60,14 +60,14 @@ static const struct Class class = {
 	.super = NULL,
 
 	// construction
-	.New = String_new,
-	.Del = String_del,
-	.Copy = String_copy,
+	.New = String_New,
+	.Del = String_Del,
+	.Copy = String_Copy,
 
 	// comparison
-	.Cmp = String_cmp,
-	.Eq  = String_eq,
-	.Ne  = String_ne,
+	.Cmp = String_Cmp,
+	.Eq  = String_Eq,
+	.Ne  = String_Ne,
 	.Lt  = NULL,
 	.Gt  = NULL,
 	.Le  = NULL,
@@ -84,7 +84,7 @@ static const struct Class class = {
 	.Trunc = NULL,
 
 	// arithmetic
-	.Add = String_add,
+	.Add = String_Add,
 	.Sub = NULL,
 	.Mul = NULL,
 	.Floordiv = NULL,
@@ -98,7 +98,7 @@ static const struct Class class = {
 	.Xor = NULL,
 
 	// assignment arithmetic
-	.Iadd = String_iadd,
+	.Iadd = String_Iadd,
 	.Isub = NULL,
 	.Imul = NULL,
 	.Ifloordiv = NULL,
@@ -112,36 +112,36 @@ static const struct Class class = {
 	.Ixor = NULL,
 
 	// representation
-	.Hash = String_hash,
-	.Str = String_str,
+	.Hash = String_Hash,
+	.Str = String_Str,
 	.Repr = NULL,
-	.Int = String_int,
-	.Uint = String_uint,
-	.Float = String_float,
-	.Bool = String_bool,
+	.Int = String_Int,
+	.Uint = String_Uint,
+	.Float = String_Float,
+	.Bool = String_Bool,
 
 	// containers
-	.Len = String_len,
+	.Len = String_Len,
 	.Getitem = NULL,
 	.Setitem = NULL,
 	.Delitem = NULL,
 	.Iter = NULL,
 	.Reversed = NULL,
-	.Contains = String_contains,
+	.Contains = String_Contains,
 };
 
 struct NamespaceString String = {
 	.Class = &class,
-	.Cstr = NamespaceString_cstr,
-	.Find = NamespaceString_find,
-	.Substring = NamespaceString_substring,
+	.Cstr = NamespaceString_Cstr,
+	.Find = NamespaceString_Find,
+	.Substring = NamespaceString_Substring,
 };
 
 /**********************************************************
  * Construction
  **********************************************************/
 
-static void *String_new(void *_self, va_list *ap)
+static void *String_New(void *_self, va_list *ap)
 {
 	struct String *self = _self;
 	assert(self->class == String.Class);
@@ -154,7 +154,7 @@ static void *String_new(void *_self, va_list *ap)
 	return self;
 }
 
-static void *String_del(void *_self)
+static void *String_Del(void *_self)
 {
 	struct String *self = _self;
 	assert(self->class == String.Class);
@@ -163,7 +163,7 @@ static void *String_del(void *_self)
 	return self;
 }
 
-static void *String_copy(const void *_self)
+static void *String_Copy(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
@@ -174,7 +174,7 @@ static void *String_copy(const void *_self)
  * Comparison
  **********************************************************/
 
-static ssize_t String_cmp(const void *_self, const void *_other)
+static ssize_t String_Cmp(const void *_self, const void *_other)
 {
 	const struct String *self = _self;
 	const struct String *other = _other;
@@ -183,14 +183,14 @@ static ssize_t String_cmp(const void *_self, const void *_other)
 	return (ssize_t)strcmp(self->text, other->text);
 }
 
-static bool String_eq(const void *_self, const void *_other)
+static bool String_Eq(const void *_self, const void *_other)
 {
-	return String_cmp(_self, _other) == 0;
+	return String_Cmp(_self, _other) == 0;
 }
 
-static bool String_ne(const void *_self, const void *_other)
+static bool String_Ne(const void *_self, const void *_other)
 {
-	return !String_eq(_self, _other);
+	return !String_Eq(_self, _other);
 }
 
 /**********************************************************
@@ -201,7 +201,7 @@ static bool String_ne(const void *_self, const void *_other)
  * Arithmetic
  **********************************************************/
 
-static void *String_add(const void *_self, const void *_other)
+static void *String_Add(const void *_self, const void *_other)
 {
 	const struct String *self = _self;
 	const struct String *other = _other;
@@ -222,7 +222,7 @@ static void *String_add(const void *_self, const void *_other)
  * Assignment Arithmetic
  **********************************************************/
 
-static void *String_iadd(void *_self, const void *_other)
+static void *String_Iadd(void *_self, const void *_other)
 {
 	struct String *self = _self;
 	const struct String *other = _other;
@@ -242,7 +242,7 @@ static void *String_iadd(void *_self, const void *_other)
  * Representation
  **********************************************************/
 
-static size_t String_hash(const void *_self)
+static size_t String_Hash(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
@@ -261,7 +261,7 @@ static size_t String_hash(const void *_self)
 	#undef FNV1A_SEED
 }
 
-static char *String_str(const void *_self)
+static char *String_Str(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
@@ -270,7 +270,7 @@ static char *String_str(const void *_self)
 	return text;
 }
 
-static ssize_t String_int(const void *_self)
+static ssize_t String_Int(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
@@ -281,7 +281,7 @@ static ssize_t String_int(const void *_self)
 	return retval;
 }
 
-static size_t String_uint(const void *_self)
+static size_t String_Uint(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
@@ -292,7 +292,7 @@ static size_t String_uint(const void *_self)
 	return retval;
 }
 
-static double String_float(const void *_self)
+static double String_Float(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
@@ -303,7 +303,7 @@ static double String_float(const void *_self)
 	return retval;
 }
 
-static bool String_bool(const void *_self)
+static bool String_Bool(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
@@ -317,14 +317,14 @@ static bool String_bool(const void *_self)
  * Containers
  **********************************************************/
 
-static size_t String_len(const void *_self)
+static size_t String_Len(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
 	return strlen(self->text);
 }
 
-static bool String_contains(const void *_self, const void *_other)
+static bool String_Contains(const void *_self, const void *_other)
 {
 	const struct String *self = _self;
 	const struct String *other = _other;
@@ -341,14 +341,14 @@ static bool String_contains(const void *_self, const void *_other)
  * Namespace Functions
  **********************************************************/
 
-static char *NamespaceString_cstr(const void *_self)
+static char *NamespaceString_Cstr(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
 	return self->text;
 }
 
-static ptrdiff_t NamespaceString_find(const void *_self, const char *substr)
+static ptrdiff_t NamespaceString_Find(const void *_self, const char *substr)
 {
 	const struct String *self = _self;
 	assert(self && substr);
@@ -356,7 +356,7 @@ static ptrdiff_t NamespaceString_find(const void *_self, const char *substr)
 	return (ptrdiff_t)(strstr(self->text, substr) - self->text);
 }
 
-static void *NamespaceString_substring(const void *_self, size_t start, size_t length)
+static void *NamespaceString_Substring(const void *_self, size_t start, size_t length)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
@@ -367,4 +367,3 @@ static void *NamespaceString_substring(const void *_self, size_t start, size_t l
 	free(text);
 	return new;
 }
-

@@ -11,14 +11,14 @@ struct Vector {
 };
 
 struct NamespaceVector {
-	const void *class;
-	void (* clear)(void *_self);
-	void (* reserve)(void *_self);
-	void (*shrink_to_fit)(const void *_self);
-	void (* push_back)(void *_self, const void *_value);
-	void (* insert)(void *_self, size_t index, const void *_value);
-	void (* pop_back)(void *_self);
-	size_t (* find)(const void *_self, const void *_value);
+	const void *Class;
+	void (* Clear)(void *_self);
+	void (* Reserve)(void *_self);
+	void (*Shrink_to_fit)(const void *_self);
+	void (* Push_back)(void *_self, const void *_value);
+	void (* Pop_back)(void *_self);
+	void (* Insert)(void *_self, size_t index, const void *_value);
+	size_t (* Find)(const void *_self, const void *_value);
 	
 };
 

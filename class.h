@@ -94,6 +94,7 @@ bool Issubclass(const void *_self, const void *_class);
 void *New(const void *_class, ...);
 void Del(void *_self);
 void *Copy(const void *_self);
+#define Pass ((void *)0)
 
 // comparison
 ssize_t Cmp(const void *_self, const void *_other);
