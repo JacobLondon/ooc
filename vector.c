@@ -50,6 +50,7 @@ static const struct Class class = {
 	.size = sizeof(struct Vector),
 	.class = &class,
 	.super = NULL,
+	.name = "Vector",
 
 	// construction
 	.New = Vector_New,
@@ -171,7 +172,7 @@ static void *Vector_Copy(const void *_self)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
-	void *_new = New(Vector.Class, Pass);
+	void *_new = New(Vector.Class);
 	struct Vector *new = _new;
 
 	for (size_t i = 0; i < self->size; i++) {

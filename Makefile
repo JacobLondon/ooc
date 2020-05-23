@@ -5,7 +5,8 @@ OBJS=\
 	class.o \
 	dict.o \
 	main.o \
-	string.o
+	string.o \
+	util.o
 
 .PHONY: clean
 

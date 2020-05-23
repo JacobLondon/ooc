@@ -7,57 +7,59 @@
 
 #include "class.h"
 #include "string.h"
+#include "util.h"
 
 /**********************************************************
  * Class Function Prototypes
  **********************************************************/
 
 // construction
-static void *String_New(void *_self, va_list *ap);
-static void *String_Del(void *_self);
-static void *String_Copy(const void *_self);
+static void*         String_New           (void *_self, va_list *ap);
+static void*         String_Del           (void *_self);
+static void*         String_Copy          (const void *_self);
 
 // comparison
-static ssize_t String_Cmp(const void *_self, const void *_other);
-static bool String_Eq(const void *_self, const void *_other);
-static bool String_Ne(const void *_self, const void *_other);
+static ssize_t       String_Cmp           (const void *_self, const void *_other);
+static bool          String_Eq            (const void *_self, const void *_other);
+static bool          String_Ne            (const void *_self, const void *_other);
 
 // unary
 
 // arithmetic
-static void *String_Add(const void *_self, const void *_other);
+static void*         String_Add           (const void *_self, const void *_other);
 
 // assignment arithmetic
-static void *String_Iadd(void *_self, const void *_other);
+static void*         String_Iadd          (void *_self, const void *_other);
 
 // representation
-static size_t String_Hash(const void *_self);
-static char *String_Str(const void *_self);
-static ssize_t String_Int(const void *_self);
-static size_t String_Uint(const void *_self);
-static double String_Float(const void *_self);
-static bool String_Bool(const void *_self);
+static size_t        String_Hash          (const void *_self);
+static char*         String_Str           (const void *_self);
+static ssize_t       String_Int           (const void *_self);
+static size_t        String_Uint          (const void *_self);
+static double        String_Float         (const void *_self);
+static bool          String_Bool          (const void *_self);
 
 // containers
-static size_t String_Len(const void *_self);
-static bool String_Contains(const void *_self, const void *_other);
+static size_t        String_Len           (const void *_self);
+static bool          String_Contains      (const void *_self, const void *_other);
 
 /**********************************************************
  * Namespace Function Prototypes
  **********************************************************/
 
-static ptrdiff_t NamespaceString_Find(const void *_self, const char *substr);
-static void *NamespaceString_Substring(const void *_self, size_t start, size_t length);
-static char *NamespaceString_Cstr(const void *_self);
+static ptrdiff_t     NamespaceString_Find       (const void *_self, const char *substr);
+static void*         NamespaceString_Substring  (const void *_self, size_t start, size_t length);
+static char*         NamespaceString_Cstr       (const void *_self);
 
 /**********************************************************
  * Definitions
  **********************************************************/
 
 static const struct Class class = {
-	.size = sizeof(struct String),
+	.size  = sizeof(struct String),
 	.class = &class,
 	.super = NULL,
+	.name  = "String",
 
 	// construction
 	.New = String_New,
@@ -248,25 +250,29 @@ static size_t String_Hash(const void *_self)
 	assert(self->class == String.Class);
 	char *p = self->text;
 
-	#define FNV1A_PRIME 0x01000193
-	#define FNV1A_SEED  0x811C9DC5
-
-	size_t hash = FNV1A_SEED;
-	while (*p) {
-		hash = (*p++ ^ hash) * FNV1A_PRIME;
-	}
-	return hash;
-
-	#undef FNV1A_PRIME
-	#undef FNV1A_SEED
+	return fnv1a(p, strlen(p));
 }
 
 static char *String_Str(const void *_self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
-	char *text = strdup(self->text);
-	assert(text);
+	size_t len;
+	char *text = NULL;
+	if (self->text == NULL) {
+		text = strdup("\"\"");
+		assert(text);
+	}
+	else {
+		len = strlen(self->text);
+		text = calloc(len + 2, sizeof(char));
+		assert(text);
+		text[0] = '"';
+		sprintf(&text[1], "%s", self->text);
+		text[len + 1] = '"';
+		text[len + 2] = '\0';
+	}
+
 	return text;
 }
 

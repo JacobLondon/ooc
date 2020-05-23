@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <stdarg.h>
+#include <string.h>
 
+#include "util.h"
 #include "class.h"
 #include "dict.h"
 
@@ -55,6 +57,7 @@ static const struct Class class = {
 	.size = sizeof(struct Dict),
 	.class = &class,
 	.super = NULL,
+	.name  = "Dict"
 
 	// construction
 	.New = Dict_New,
@@ -178,7 +181,7 @@ static void *Dict_Copy(const void *_self)
 {
 	const struct Dict *self = _self;
 	assert(self->class == Dict.Class);
-	void *_new = New(Dict.Class, Pass);
+	void *_new = New(Dict.Class);
 	struct Dict *new = _new;
 	void *tmp;
 
@@ -246,7 +249,25 @@ static bool Dict_Ne(const void *_self, const void *_other)
 
 static char *Dict_Str(const void *_self)
 {
-	return "TODO";
+	const struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	size_t i;
+	char *key, *value;
+	char *text = strdup("{");
+
+	for (i = 0; i < self->cap; i++) {
+		if (self->keys[i] != NULL) {
+			// heap char stars!
+			key = Str(self->keys[i]);
+			value = Str(self->values[i]);
+			strcatf(&text, "%s: %s, ", key, value);
+			free(key);
+			free(value);
+		}
+	}
+
+	text[strlen(text) - 2] = '}';
+	return text;
 }
 
 static bool Dict_Bool(const void *_self)
@@ -341,7 +362,7 @@ static void *NamespaceDict_Reserve(void *_self, size_t mod)
 	assert(self->keys);
 
 	for (size_t index, i = 0; i < oldcap; i++) {
-		if (oldkeys[i]) {
+		if (oldkeys[i] != NULL) {
 			index = Dict.Hash(self, oldkeys[i]);
 
 			// move value

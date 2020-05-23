@@ -3,6 +3,7 @@
 #include "class.h"
 #include "string.h"
 #include "dict.h"
+#include "integer.h"
 
 int main(void)
 {
@@ -29,18 +30,21 @@ int main(void)
 	}
 
 	{
-		struct Dict *mydict = New(Dict.Class, Pass);
+		struct Dict *mydict = New(Dict.Class);
 
 		void *a = New(String.Class, "Hello");
 		void *b = New(String.Class, "There");
 		Setitem(mydict, a, b);
 		
 		printf("a in mydict? %d\n", Contains(mydict, a));
-
+		char *s = Str(mydict);
+		printf("Dict: %s\n", s);
 		Del(a);
 		Del(b);
 		Del(mydict);
+		free(s);
 	}
+
 
 	return 0;
 }
