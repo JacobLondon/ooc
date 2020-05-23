@@ -34,7 +34,7 @@ static bool          Boolean_Bool          (const void *_self);
  **********************************************************/
 
 static const struct Class class = {
-	.size      = sizeof(struct Integer),
+	.size      = sizeof(struct Boolean),
 	.class     = &class,
 	.super     = NULL,
 	.name      = "Boolean",

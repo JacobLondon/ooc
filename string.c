@@ -34,6 +34,7 @@ static void*         String_Iadd          (void *_self, const void *_other);
 // representation
 static size_t        String_Hash          (const void *_self);
 static char*         String_Str           (const void *_self);
+static char*         String_Repr          (const void *_self);
 static ssize_t       String_Int           (const void *_self);
 static size_t        String_Uint          (const void *_self);
 static double        String_Float         (const void *_self);
@@ -56,86 +57,86 @@ static char*         NamespaceString_Cstr       (const void *_self);
  **********************************************************/
 
 static const struct Class class = {
-	.size  = sizeof(struct String),
-	.class = &class,
-	.super = NULL,
-	.name  = "String",
+	.size      = sizeof(struct String),
+	.class     = &class,
+	.super     = NULL,
+	.name      = "String",
 
 	// construction
-	.New = String_New,
-	.Del = String_Del,
-	.Copy = String_Copy,
+	.New       = String_New,
+	.Del       = String_Del,
+	.Copy      = String_Copy,
 
 	// comparison
-	.Cmp = String_Cmp,
-	.Eq  = String_Eq,
-	.Ne  = String_Ne,
-	.Lt  = NULL,
-	.Gt  = NULL,
-	.Le  = NULL,
-	.Ge  = NULL,
+	.Cmp       = String_Cmp,
+	.Eq        = String_Eq,
+	.Ne        = String_Ne,
+	.Lt        = NULL,
+	.Gt        = NULL,
+	.Le        = NULL,
+	.Ge        = NULL,
 
 	// unary
-	.Pos = NULL,
-	.Neg = NULL,
-	.Abs = NULL,
-	.Invert = NULL,
-	.Round = NULL,
-	.Floor = NULL,
-	.Ceil = NULL,
-	.Trunc = NULL,
+	.Pos       = NULL,
+	.Neg       = NULL,
+	.Abs       = NULL,
+	.Invert    = NULL,
+	.Round     = NULL,
+	.Floor     = NULL,
+	.Ceil      = NULL,
+	.Trunc     = NULL,
 
 	// arithmetic
-	.Add = String_Add,
-	.Sub = NULL,
-	.Mul = NULL,
-	.Floordiv = NULL,
-	.Div = NULL,
-	.Mod = NULL,
-	.Pow = NULL,
-	.Lshift = NULL,
-	.Rshift = NULL,
-	.And = NULL,
-	.Or = NULL,
-	.Xor = NULL,
+	.Add       = String_Add,
+	.Sub       = NULL,
+	.Mul       = NULL,
+	.Floordiv  = NULL,
+	.Div       = NULL,
+	.Mod       = NULL,
+	.Pow       = NULL,
+	.Lshift    = NULL,
+	.Rshift    = NULL,
+	.And       = NULL,
+	.Or        = NULL,
+	.Xor       = NULL,
 
 	// assignment arithmetic
-	.Iadd = String_Iadd,
-	.Isub = NULL,
-	.Imul = NULL,
+	.Iadd      = String_Iadd,
+	.Isub      = NULL,
+	.Imul      = NULL,
 	.Ifloordiv = NULL,
-	.Idiv = NULL,
-	.Imod = NULL,
-	.Ipow = NULL,
-	.Ilshift = NULL,
-	.Irshift = NULL,
-	.Iand = NULL,
-	.Ior = NULL,
-	.Ixor = NULL,
+	.Idiv      = NULL,
+	.Imod      = NULL,
+	.Ipow      = NULL,
+	.Ilshift   = NULL,
+	.Irshift   = NULL,
+	.Iand      = NULL,
+	.Ior       = NULL,
+	.Ixor      = NULL,
 
 	// representation
-	.Hash = String_Hash,
-	.Str = String_Str,
-	.Repr = NULL,
-	.Int = String_Int,
-	.Uint = String_Uint,
-	.Float = String_Float,
-	.Bool = String_Bool,
+	.Hash      = String_Hash,
+	.Str       = String_Str,
+	.Repr      = String_Repr,
+	.Int       = String_Int,
+	.Uint      = String_Uint,
+	.Float     = String_Float,
+	.Bool      = String_Bool,
 
 	// containers
-	.Len = String_Len,
-	.Getitem = NULL,
-	.Setitem = NULL,
-	.Delitem = NULL,
-	.Iter = NULL,
-	.Reversed = NULL,
-	.Contains = String_Contains,
+	.Len       = String_Len,
+	.Getitem   = NULL,
+	.Setitem   = NULL,
+	.Delitem   = NULL,
+	.Iter      = NULL,
+	.Reversed  = NULL,
+	.Contains  = String_Contains,
 };
 
 struct NamespaceString String = {
-	.Class = &class,
-	.Cstr = NamespaceString_Cstr,
-	.Find = NamespaceString_Find,
+	.Class     = &class,
+	.Cstr      = NamespaceString_Cstr,
+	.Find      = NamespaceString_Find,
 	.Substring = NamespaceString_Substring,
 };
 
@@ -273,6 +274,15 @@ static char *String_Str(const void *_self)
 		text[len + 2] = '\0';
 	}
 
+	return text;
+}
+
+static char *String_Repr(const void *_self)
+{
+	const struct String *self = _self;
+	assert(self->class == String.Class);
+	char *text = NULL;
+	strcatf(&text, "'<%s object at 0x%x>'", ((struct Class *)(self))->name, (size_t)self);
 	return text;
 }
 

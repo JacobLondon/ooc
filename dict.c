@@ -16,13 +16,13 @@
  **********************************************************/
 
 // construction
-static void *Dict_New(void *_self, va_list *ap);
-static void *Dict_Del(void *_self);
-static void *Dict_Copy(const void *_self);
+static void*         Dict_New           (void *_self, va_list *ap);
+static void*         Dict_Del           (void *_self);
+static void*         Dict_Copy          (const void *_self);
 
 // comparison
-static bool Dict_Eq(const void *_self, const void *_other);
-static bool Dict_Ne(const void *_self, const void *_other);
+static bool          Dict_Eq            (const void *_self, const void *_other);
+static bool          Dict_Ne            (const void *_self, const void *_other);
 
 // unary
 
@@ -31,109 +31,110 @@ static bool Dict_Ne(const void *_self, const void *_other);
 // assignment arithmetic
 
 // representation
-static char *Dict_Str(const void *_self);
-static bool Dict_Bool(const void *_self);
+static size_t        Dict_Hash          (const void *_self);
+static char*         Dict_Str           (const void *_self);
+static char*         Dict_Repr          (const void *_self);
+static bool          Dict_Bool          (const void *_self);
 
 // containers
-static size_t Dict_Len(const void *_self);
-static void *Dict_Getitem(const void *_self, const void *_key);
-static void Dict_Setitem(void *_self, const void *_key, const void *_value);
-static void Dict_Delitem(void *_self, const void *_key);
-static bool Dict_Contains(const void *_self, const void *_other);
+static size_t        Dict_Len           (const void *_self);
+static void*         Dict_Getitem       (const void *_self, const void *_key);
+static void          Dict_Setitem       (void *_self, const void *_key, const void *_value);
+static void          Dict_Delitem       (void *_self, const void *_key);
+static bool          Dict_Contains      (const void *_self, const void *_other);
 
 /**********************************************************
  * Namespace Function Prototypes
  **********************************************************/
 
-static void *NamespaceDict_Reserve(void *_self, size_t mod);
-static size_t NamespaceDict_Hash(const void *_self, const void *_key);
-
+static void*         NamespaceDict_Reserve  (void *_self, size_t mod);
+static size_t        NamespaceDict_Hash     (const void *_self, const void *_key);
 
 /**********************************************************
  * Definitions
  **********************************************************/
 
 static const struct Class class = {
-	.size = sizeof(struct Dict),
-	.class = &class,
-	.super = NULL,
-	.name  = "Dict"
+	.size      = sizeof(struct Dict),
+	.class     = &class,
+	.super     = NULL,
+	.name      = "Dict",
 
 	// construction
-	.New = Dict_New,
-	.Del = Dict_Del,
-	.Copy = NULL,
+	.New       = Dict_New,
+	.Del       = Dict_Del,
+	.Copy      = NULL,
 
 	// comparison
-	.Cmp = NULL,
-	.Eq  = Dict_Eq,
-	.Ne  = Dict_Ne,
-	.Lt  = NULL,
-	.Gt  = NULL,
-	.Le  = NULL,
-	.Ge  = NULL,
+	.Cmp       = NULL,
+	.Eq        = Dict_Eq,
+	.Ne        = Dict_Ne,
+	.Lt        = NULL,
+	.Gt        = NULL,
+	.Le        = NULL,
+	.Ge        = NULL,
 
 	// unary
-	.Pos = NULL,
-	.Neg = NULL,
-	.Abs = NULL,
-	.Invert = NULL,
-	.Round = NULL,
-	.Floor = NULL,
-	.Ceil = NULL,
-	.Trunc = NULL,
+	.Pos       = NULL,
+	.Neg       = NULL,
+	.Abs       = NULL,
+	.Invert    = NULL,
+	.Round     = NULL,
+	.Floor     = NULL,
+	.Ceil      = NULL,
+	.Trunc     = NULL,
 
 	// arithmetic
-	.Add = NULL,
-	.Sub = NULL,
-	.Mul = NULL,
-	.Floordiv = NULL,
-	.Div = NULL,
-	.Mod = NULL,
-	.Pow = NULL,
-	.Lshift = NULL,
-	.Rshift = NULL,
-	.And = NULL,
-	.Or = NULL,
-	.Xor = NULL,
+	.Add       = NULL,
+	.Sub       = NULL,
+	.Mul       = NULL,
+	.Floordiv  = NULL,
+	.Div       = NULL,
+	.Mod       = NULL,
+	.Pow       = NULL,
+	.Lshift    = NULL,
+	.Rshift    = NULL,
+	.And       = NULL,
+	.Or        = NULL,
+	.Xor       = NULL,
 
 	// assignment arithmetic
-	.Iadd = NULL,
-	.Isub = NULL,
-	.Imul = NULL,
+	.Iadd      = NULL,
+	.Isub      = NULL,
+	.Imul      = NULL,
 	.Ifloordiv = NULL,
-	.Idiv = NULL,
-	.Imod = NULL,
-	.Ipow = NULL,
-	.Ilshift = NULL,
-	.Irshift = NULL,
-	.Iand = NULL,
-	.Ior = NULL,
-	.Ixor = NULL,
+	.Idiv      = NULL,
+	.Imod      = NULL,
+	.Ipow      = NULL,
+	.Ilshift   = NULL,
+	.Irshift   = NULL,
+	.Iand      = NULL,
+	.Ior       = NULL,
+	.Ixor      = NULL,
 
 	// representation
-	.Hash = NULL,
-	.Str = Dict_Str,
-	.Repr = NULL,
-	.Int = NULL,
-	.Uint = NULL,
-	.Float = NULL,
-	.Bool = Dict_Bool,
+	.Hash      = NULL,
+	.Str       = Dict_Str,
+	.Repr      = Dict_Repr,
+	.Int       = NULL,
+	.Uint      = NULL,
+	.Float     = NULL,
+	.Bool      = Dict_Bool,
 
 	// containers
-	.Len = Dict_Len,
-	.Getitem = Dict_Getitem,
-	.Setitem = Dict_Setitem,
-	.Delitem = Dict_Delitem,
-	.Iter = NULL,
-	.Reversed = NULL,
-	.Contains = Dict_Contains,
+	.Len       = Dict_Len,
+	.Getitem   = Dict_Getitem,
+	.Setitem   = Dict_Setitem,
+	.Delitem   = Dict_Delitem,
+	.Iter      = NULL,
+	.Reversed  = NULL,
+	.Contains  = Dict_Contains,
 };
 
 struct NamespaceDict Dict = {
-	.Class = &class,
-	.Hash = NamespaceDict_Hash,
-	.Reserve = NamespaceDict_Reserve,
+	.Class         = &class,
+	.Hash          = NamespaceDict_Hash,
+	.Reserve       = NamespaceDict_Reserve,
 	.Shrink_to_fit = NULL,
 };
 
@@ -247,6 +248,13 @@ static bool Dict_Ne(const void *_self, const void *_other)
  * Representation
  **********************************************************/
 
+static size_t Dict_Hash(const void *_self)
+{
+	const struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	return fnv1a(self, sizeof(self));
+}
+
 static char *Dict_Str(const void *_self)
 {
 	const struct Dict *self = _self;
@@ -268,6 +276,14 @@ static char *Dict_Str(const void *_self)
 
 	text[strlen(text) - 2] = '}';
 	return text;
+}
+
+static char *Dict_Repr(const void *_self)
+{
+	const struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	char *text = NULL;
+	strcatf(&text, "'<%s object at 0x%x>'", ((struct Class *)(self))->name, (size_t)self);
 }
 
 static bool Dict_Bool(const void *_self)

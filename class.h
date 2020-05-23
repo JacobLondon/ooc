@@ -67,13 +67,13 @@ struct Class {
 	void*    (* Ixor)      (void *_self, const void *_other);
 
 	// representation
-	size_t   (* Hash)    (const void *_self);
-	char*    (* Str)     (const void *_self);
-	char*    (* Repr)    (const void *_self);
-	ssize_t  (* Int)     (const void *_self);
-	size_t   (* Uint)    (const void *_self);
-	double   (* Float)   (const void *_self);
-	bool     (* Bool)    (const void *_self);
+	size_t   (* Hash)      (const void *_self);
+	char*    (* Str)       (const void *_self);
+	char*    (* Repr)      (const void *_self);
+	ssize_t  (* Int)       (const void *_self);
+	size_t   (* Uint)      (const void *_self);
+	double   (* Float)     (const void *_self);
+	bool     (* Bool)      (const void *_self);
 
 	// containers
 	size_t   (* Len)       (const void *_self);

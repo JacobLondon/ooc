@@ -17,9 +17,7 @@ struct NamespaceVector {
 	void (*Shrink_to_fit)(const void *_self);
 	void (* Push_back)(void *_self, const void *_value);
 	void (* Pop_back)(void *_self);
-	void (* Insert)(void *_self, size_t index, const void *_value);
 	size_t (* Find)(const void *_self, const void *_value);
-	
 };
 
 extern struct NamespaceVector Vector;
