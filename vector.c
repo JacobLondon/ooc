@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "util.h"
 #include "class.h"
@@ -42,8 +43,13 @@ static bool          Vector_Contains      (const void *_self, const void *_other
  * Namespace Function Prototypes
  **********************************************************/
 
-static void          NamespaceVector_Push_back  (void *_self, const void *_value);
-
+static void          NamespaceVector_Clear        (void *_self);
+static void          NamespaceVector_Reserve      (void *_self, size_t cap);
+static void          NamespaceVector_Shrink_to_fit(void *_self);
+static void          NamespaceVector_Push_back    (void *_self, void *_value);
+static void          NamespaceVector_Pop_back     (void *_self);
+static size_t        NamespaceVector_Find         (const void *_self, const void *_value);
+static void*         NamespaceVector_Emplace_back (void *_self, const void *_class, ...);
 
 /**********************************************************
  * Definitions
@@ -110,7 +116,7 @@ static const struct Class class = {
 	// representation
 	.Hash      = NULL,
 	.Str       = Vector_Str,
-	.Repr      = NULL,
+	.Repr      = Vector_Repr,
 	.Int       = NULL,
 	.Uint      = NULL,
 	.Float     = NULL,
@@ -128,11 +134,12 @@ static const struct Class class = {
 
 struct NamespaceVector Vector = {
 	.Class         = &class,
-	.Clear         = NULL,
-	.Shrink_to_fit = NULL,
+	.Clear         = NamespaceVector_Clear,
+	.Shrink_to_fit = NamespaceVector_Shrink_to_fit,
 	.Push_back     = NamespaceVector_Push_back,
-	.Pop_back      = NULL,
-	.Find          = NULL,
+	.Pop_back      = NamespaceVector_Pop_back,
+	.Find          = NamespaceVector_Find,
+	.Emplace_back  = NamespaceVector_Emplace_back,
 };
 
 /**********************************************************
@@ -161,18 +168,21 @@ static void *Vector_Del(void *_self)
 	for (size_t i = 0; i < self->cap; i++) {
 		if (self->buf[i]) {
 			Del(self->buf[i]);
+			self->buf[i] = NULL;
 		}
 	}
 
 	free(self->buf);
 	self->buf = NULL;
+	self->size = 0;
+	self->cap = 0;
 
 	return self;
 }
 
 static void *Vector_Copy(const void *_self)
 {
-	struct Vector *self = _self;
+	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	void *_new = New(Vector.Class);
 	struct Vector *new = _new;
@@ -232,15 +242,23 @@ static char *Vector_Str(const void *_self)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
+	size_t i;
 	char *value;
 	char *text = strdup("[");
-	size_t i;
+	assert(text);
+
+	if (self->size == 0) {
+		strcatf(&text, "]");
+		return text;
+	}
+
 	for (i = 0; i < self->size; i++) {
 		value = Str(self->buf[i]);
 		strcatf(&text, "%s, ", value);
 		free(value);
 	}
 	text[strlen(text) - 2] = ']';
+	text[strlen(text) - 1] = '\0';
 	return text;
 }
 
@@ -249,7 +267,8 @@ static char *Vector_Repr(const void *_self)
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", ((struct Class *)(self))->name, (size_t)self);
+	strcatf(&text, "'<%s object at 0x%x>'", Classof(self)->name, (size_t)self);
+	assert(text);
 	return text;
 }
 
@@ -297,16 +316,15 @@ static void Vector_Delitem(void *_self, const void *_key)
 	Del(self->buf[idx]);
 
 	// shift buffer
-	for (size_t i = idx; self->buf[i] < self->size; i++) {
+	for (size_t i = idx; (size_t)self->buf[i] < self->size; i++) {
 		self->buf[i] = self->buf[i + 1];
 	}
 	self->size--;
 }
 
-static bool Vector_Contains(void *_self, const void *_other)
+static bool Vector_Contains(const void *_self, const void *_other)
 {
-	struct Vector *self = _self;
-	struct Vector *other = _other;
+	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 
 	// unsorted linear search
@@ -322,4 +340,101 @@ static bool Vector_Contains(void *_self, const void *_other)
  * Namespace Functions
  **********************************************************/
 
+static void NamespaceVector_Clear(void *_self)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+	size_t i;
+	for (i = 0; i < self->size; i++) {
+		if (self->buf[i]) {
+			Del(self->buf[i]);
+		}
+	}
+	self->size = 0;
+}
 
+static void NamespaceVector_Reserve(void *_self, size_t cap)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+	void *tmp;
+	size_t i;
+
+	/* del items that will be truncated off if shrinking */
+	if (cap < self->size) {
+		for (i = cap; i < self->size; i++) {
+			if (self->buf[i]) {
+				Del(self->buf[i]);
+			}
+		}
+		self->size = cap;
+	}
+
+	/* more space is being allocated */
+	tmp = realloc(self->buf, cap * sizeof(void *));
+	assert(tmp);
+	self->buf = tmp;
+	self->cap = cap;
+}
+
+static void NamespaceVector_Shrink_to_fit(void *_self)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+
+	NamespaceVector_Reserve(self, self->size);
+}
+
+static void NamespaceVector_Push_back(void *_self, void *_value)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+
+	if (self->size + 1 >= self->cap) {
+		NamespaceVector_Reserve(self, self->cap * VECTOR_DEFAULT_SCALING);
+	}
+	self->buf[self->size++] = _value;
+}
+
+static void NamespaceVector_Pop_back(void *_self)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+
+	if (self->buf[self->size - 1]) {
+		Del(self->buf[self->size - 1]);
+	}
+	self->size--;
+}
+
+static size_t NamespaceVector_Find(const void *_self, const void *_value)
+{
+	const struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+
+	size_t i;
+	for (i = 0; i < self->size; i++) {
+		if (Cmp(self->buf[i], _value) == 0) {
+			return i;
+		}
+	}
+	return SIZE_MAX;
+}
+
+static void *NamespaceVector_Emplace_back(void *_self, const void *_class, ...)
+{
+	struct Vector *self = _self;
+	va_list ap;
+	void *ret;
+	assert(self->class == Vector.Class);
+
+	if (self->size + 1 >= self->cap) {
+		NamespaceVector_Reserve(self, self->cap * VECTOR_DEFAULT_SCALING);
+	}
+	va_start(ap, _class);
+	ret = Vnew(_class, &ap);
+	self->buf[self->size++] = ret;
+	va_end(ap);
+
+	return ret;
+}

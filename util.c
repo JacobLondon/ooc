@@ -198,12 +198,12 @@ done:
 	#undef X_FORMAT
 }
 
-size_t fnv1a(void *buf, size_t size)
+size_t fnv1a(const void *buf, size_t size)
 {
 	#define FNV1A_PRIME 0x01000193
 	#define FNV1A_SEED  0x811C9DC5
 	size_t hash = FNV1A_SEED;
-	unsigned char *p = buf;
+	const unsigned char *p = buf;
 
 	while (size--) {
 		hash = (*p++ ^ hash) * FNV1A_PRIME;

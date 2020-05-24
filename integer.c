@@ -1,9 +1,11 @@
+#include <assert.h>
 #include <math.h>
 #include <stdarg.h>
 #include "class.h"
 #include "integer.h"
 #include "boolean.h"
 #include "util.h"
+#include "real.h"
 
 /**********************************************************
  * Class Function Prototypes
@@ -161,7 +163,7 @@ static void *Integer_New(void *_self, va_list *ap)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	self->value = va_arg(*ap, ssize_t);
+	self->value = (ssize_t)va_arg(*ap, int);
 	return self;
 }
 
@@ -187,27 +189,13 @@ static void *Integer_Copy(const void *_self)
 static ssize_t Integer_Cmp(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		if (self->value < Float(other)) {
+	if (Isinstance(Real.Class, _other)) {
+		if (self->value < Float(_other)) {
 			return -1;
 		}
-		else if (Float(self) == Float(other)) {
-			return 0;
-		}
-		else {
-			return 1;
-		}
-	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		if (self->value < Int(other)) {
-			return -1;
-		}
-		else if (self->value == Int(other)) {
+		else if (Float(self) == Float(_other)) {
 			return 0;
 		}
 		else {
@@ -215,8 +203,15 @@ static ssize_t Integer_Cmp(const void *_self, const void *_other)
 		}
 	}
 
-	ClassError(self, other);
-	return 0;
+	if (self->value < Int(_other)) {
+		return -1;
+	}
+	else if (self->value == Int(_other)) {
+		return 0;
+	}
+	else {
+		return 1;
+	}
 }
 
 static bool Integer_Eq(const void *_self, const void *_other)
@@ -257,14 +252,14 @@ static void *Integer_Pos(const void *_self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	return New(Integer.Class, (ssize_t)(+self->value));
+	return New(Integer.Class, (ssize_t)(self->value < 0 ? +self->value : self->value));
 }
 
 static void *Integer_Neg(const void *_self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	return New(Integer.Class, (ssize_t)(-self->value));
+	return New(Integer.Class, (ssize_t)(self->value > 0 ? -self->value : self->value));
 }
 
 static void *Integer_Abs(const void *_self)
@@ -288,179 +283,95 @@ static void *Integer_Invert(const void *_self)
 static void *Integer_Add(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		return New(Real.Class, (double)(self->value + Float(other)));
+	if (Isinstance(Real.Class, _other)) {
+		return New(Real.Class, (double)(self->value + Float(_other)));
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value + Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value + Int(_other)));
 }
 
 static void *Integer_Sub(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		return New(Real.Class, (double)(self->value - Float(other)));
+	if (Isinstance(Real.Class, _other)) {
+		return New(Real.Class, (double)(self->value - Float(_other)));
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value - Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value - Int(_other)));
 }
 
 static void *Integer_Mul(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		return New(Real.Class, (double)(self->value * Float(other)));
+	if (Isinstance(Real.Class, _other)) {
+		return New(Real.Class, (double)(self->value * Float(_other)));
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value * Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value * Int(_other)));
 }
 
 static void *Integer_Div(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		return New(Real.Class, (double)(self->value / Float(other)));
+	if (Isinstance(Real.Class, _other)) {
+		return New(Real.Class, (double)(self->value / Float(_other)));
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value / Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value / Int(_other)));
 }
 
 static void *Integer_Mod(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		return New(Real.Class, (double)fmod(self->value, Float(other)));
+	if (Isinstance(Real.Class, _other)) {
+		return New(Real.Class, (double)fmod(self->value, Float(_other)));
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value % Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value % Int(_other)));
 }
 
 static void *Integer_Pow(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		return New(Real.Class, (double)pow(self->value, Float(other)));
+	if (Isinstance(Real.Class, _other)) {
+		return New(Real.Class, (double)pow(self->value, Float(_other)));
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)pow(self->value, Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)pow(self->value, Int(_other)));
 }
 
 static void *Integer_Lshift(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	    other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value << Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value << Int(_other)));
 }
 
 static void *Integer_Rshift(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	    other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value >> Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value >> Int(_other)));
 }
 
 static void *Integer_And(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	    other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value & Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value & Int(_other)));
 }
 
 static void *Integer_Or(const void *_self, const void *_other)
 {
 	const struct Integer *self = _self;
-	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value | Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value | Int(_other)));
 }
 
 static void *Integer_Xor(const void *_self, const void *_other)
@@ -468,15 +379,7 @@ static void *Integer_Xor(const void *_self, const void *_other)
 	const struct Integer *self = _self;
 	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	    other->class == Boolean.Class)
-	{
-		return New(Integer.Class, (ssize_t)(self->value ^ Int(other)));
-	}
-
-	ClassError(self, other);
-	return NULL;
+	return New(Integer.Class, (ssize_t)(self->value ^ Int(other)));
 }
 
 /**********************************************************
@@ -485,213 +388,120 @@ static void *Integer_Xor(const void *_self, const void *_other)
 
 static void *Integer_Iadd(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-
-	if (other->class == Real.Class) {
-		self->value = (double)(self->value + Float(other));
+	if (Isinstance(Real.Class, _other)) {
+		self->value = (double)(self->value + Float(_other));
 		return self;
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value + Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value + Int(_other));
+	return self;
 }
 
 static void *Integer_Isub(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		self->value = (double)(self->value - Float(other));
+	if (Isinstance(Real.Class, _other)) {
+		self->value = (double)(self->value - Float(_other));
 		return self;
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value - Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value - Int(_other));
+	return self;
 }
 
 static void *Integer_Imul(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		self->value = (double)(self->value * Float(other));
+	if (Isinstance(Real.Class, _other)) {
+		self->value = (double)(self->value * Float(_other));
 		return self;
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value * Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value * Int(_other));
+	return self;
 }
 
 static void *Integer_Idiv(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		self->value = (double)(self->value / Float(other));
+	if (Isinstance(Real.Class, _other)) {
+		self->value = (double)(self->value / Float(_other));
 		return self;
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value / Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value / Int(_other));
+	return self;
 }
 
 static void *Integer_Imod(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		self->value = (double)fmod(self->value, Float(other));
+	if (Isinstance(Real.Class, _other)) {
+		self->value = (double)fmod(self->value, Float(_other));
 		return self;
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value % Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value % Int(_other));
+	return self;
 }
 
 static void *Integer_Ipow(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 
-	if (other->class == Real.Class) {
-		self->value = (double)pow(self->value, Float(other));
+	if (Isinstance(Real.Class, _other)) {
+		self->value = (double)pow(self->value, Float(_other));
 		return self;
 	}
-	else if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)pow(self->value, Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)pow(self->value, Int(_other));
+	return self;
 }
 
 static void *Integer_Ilshift(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	    other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value << Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value << Int(_other));
+	return self;
 }
 
 static void *Integer_Irshift(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	    other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value >> Int(other));
-		return self;
-	}
+	self->value = (ssize_t)(self->value >> Int(_other));
+	return self;
 
-	ClassError(self, other);
-	return NULL;
 }
 
 static void *Integer_Iand(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	    other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value & Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value & Int(_other));
+	return self;
 }
 
 static void *Integer_Ior(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	         other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value | Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value | Int(_other));
+	return self;
 }
 
 static void *Integer_Ixor(void *_self, const void *_other)
 {
-	const struct Integer *self = _self;
-	const struct Integer *other = _other;
+	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	
-	if (other->class == Integer.Class ||
-	    other->class == Boolean.Class)
-	{
-		self->value = (ssize_t)(self->value ^ Int(other));
-		return self;
-	}
-
-	ClassError(self, other);
-	return NULL;
+	self->value = (ssize_t)(self->value ^ Int(_other));
+	return self;
 }
 
 /**********************************************************
@@ -702,7 +512,7 @@ static size_t Integer_Hash(const void *_self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
-	return fnv1a(&self->value, sizeof(ssize_t));
+	return fnv1a(&self->value, sizeof(self->value));
 }
 
 static char *Integer_Str(const void *_self)
@@ -711,6 +521,7 @@ static char *Integer_Str(const void *_self)
 	assert(self->class == Integer.Class);
 	char *text = NULL;
 	strcatf(&text, "%zd", self->value);
+	assert(text);
 	return text;
 }
 
@@ -719,7 +530,8 @@ static char *Integer_Repr(const void *_self)
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", ((struct Class *)(self))->name, (size_t)self);
+	strcatf(&text, "'<%s object at 0x%x>'", Classof(self)->name, (size_t)self);
+	assert(text);
 	return text;
 }
 

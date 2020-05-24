@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <string.h>
 
 #include "class.h"
 #include "string.h"
@@ -24,10 +25,10 @@ const void *Super(const void *_self)
 
 const void *Type(const void *_self)
 {
-	const struct Class *const *self = _self;
-	assert(_self && *self);
-	assert((*self)->class);
-	return (*self)->class;
+	const struct Class *self = _self;
+	assert(_self);
+	assert(self->class);
+	return self->class;
 }
 
 bool Isinstance(const void *_self, const void *_class)
@@ -97,6 +98,25 @@ void *Copy(const void *_self)
 	assert(_self && *self);
 	assert((*self)->Copy);
 	return (*self)->Copy(_self);
+}
+
+void *Vnew(const void *_class, va_list *ap)
+{
+	const struct Class *class = _class;
+	void *self = calloc(1, class->size);
+
+	assert(self);
+	/* Technically not a Class *, it is pointing
+	   to the first element of the custom struct
+	   with the first member being a Class * And
+	   setting that */
+	*(const struct Class **)self = class;
+
+	if (class->New) {
+		self = class->New(self, ap);
+	}
+
+	return self;
 }
 
 /**********************************************************
@@ -465,6 +485,14 @@ ssize_t Int(const void *_self)
 	return (*self)->Int(_self);
 }
 
+size_t Uint(const void *_self)
+{
+	const struct Class *const *self = _self;
+	assert(_self && *self);
+	assert((*self)->Uint);
+	return (*self)->Uint(_self);
+}
+
 double Float(const void *_self)
 {
 	const struct Class *const *self = _self;
@@ -542,4 +570,29 @@ bool Contains(const void *_self, const void *_other)
 	assert(_self && *self && _other);
 	assert((*self)->Contains);
 	return (*self)->Contains(_self, _other);
+}
+
+void println(const char *_fmt, ...)
+{
+	assert(_fmt);
+	size_t i;
+	va_list ap;
+	void *object;
+	char *value;
+
+	va_start(ap, _fmt);
+	for (i = 0; _fmt[i] != '\0'; i++) {
+		if (_fmt[i] == '{' && _fmt[i + 1] == '}') {
+			object = va_arg(ap, void *);
+			value = Str(object);
+			printf("%s", value);
+			free(value);
+			i++;
+		}
+		else {
+			printf("%c", _fmt[i]);
+		}
+	}
+	va_end(ap);
+	printf("\n");
 }

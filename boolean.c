@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <string.h>
 #include "class.h"
 #include "util.h"
@@ -122,7 +123,7 @@ static void *Boolean_New(void *_self, va_list *ap)
 {
 	struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
-	self->value = va_arg(*ap, bool);
+	self->value = (bool)va_arg(*ap, int);
 	return self;
 }
 
@@ -184,7 +185,7 @@ static size_t Boolean_Hash(const void *_self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
-	return fnv1a(&self->value, sizeof(bool));
+	return fnv1a(&self->value, sizeof(self->value));
 }
 
 static char *Boolean_Str(const void *_self)

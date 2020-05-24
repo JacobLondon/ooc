@@ -4,6 +4,6 @@
 #include <stddef.h>
 
 int strcatf(char **buffer, const char *format, ...);
-size_t fnv1a(void *buf, size_t size);
+size_t fnv1a(const void *buf, size_t size);
 
 #endif /* OOC_UTIL_H */

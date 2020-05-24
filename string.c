@@ -161,6 +161,7 @@ static void *String_Del(void *_self)
 {
 	struct String *self = _self;
 	assert(self->class == String.Class);
+	memset(self->text, 0, strlen(self->text));
 	free(self->text);
 	self->text = NULL;
 	return self;
@@ -282,7 +283,8 @@ static char *String_Repr(const void *_self)
 	const struct String *self = _self;
 	assert(self->class == String.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", ((struct Class *)(self))->name, (size_t)self);
+	strcatf(&text, "'<%s object at 0x%x>'", Classof(self)->name, (size_t)self);
+	assert(text);
 	return text;
 }
 

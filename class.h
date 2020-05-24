@@ -12,7 +12,7 @@ struct Class {
 	size_t size;
 	const struct Class *class;
 	const struct Class *super;
-	const char *name;
+	const char*  name;
 
 	// construction
 	void*   (* New)        (void *_self, va_list *ap);
@@ -96,6 +96,7 @@ bool          Issubclass    (const void *_self, const void *_class);
 void*         New           (const void *_class, ...);
 void          Del           (void *_self);
 void*         Copy          (const void *_self);
+void*         Vnew          (const void *_class, va_list *ap);
 
 // comparison
 ssize_t       Cmp           (const void *_self, const void *_other);
@@ -244,5 +245,10 @@ static const struct Class class = {
 	printf("%s: %s not compatible with %s.\n", __func__, ((struct Class *)Class0)->name, ((struct Class *)Class1)->name); \
 	assert(0); \
 } while (0)
+
+#define Classof(Object) ((struct Class *)Object)
+
+void println(const char *_fmt, ...);
+typedef void *var;
 
 #endif /* OOC_CLASS_H */

@@ -133,9 +133,10 @@ static const struct Class class = {
 
 struct NamespaceDict Dict = {
 	.Class         = &class,
-	.Hash          = NamespaceDict_Hash,
+	.Clear         = NULL,
 	.Reserve       = NamespaceDict_Reserve,
 	.Shrink_to_fit = NULL,
+	.Hash          = NamespaceDict_Hash,
 };
 
 /**********************************************************
@@ -167,6 +168,8 @@ static void *Dict_Del(void *_self)
 		if (self->keys[i]) {
 			Del(self->keys[i]);
 			Del(self->values[i]);
+			self->keys[i] = NULL;
+			self->values[i] = NULL;
 		}
 	}
 
@@ -262,6 +265,12 @@ static char *Dict_Str(const void *_self)
 	size_t i;
 	char *key, *value;
 	char *text = strdup("{");
+	assert(text);
+
+	if (self->size == 0) {
+		strcatf(&text, "}");
+		return text;
+	}
 
 	for (i = 0; i < self->cap; i++) {
 		if (self->keys[i] != NULL) {
@@ -275,6 +284,7 @@ static char *Dict_Str(const void *_self)
 	}
 
 	text[strlen(text) - 2] = '}';
+	text[strlen(text) - 1] = '\0';
 	return text;
 }
 
@@ -283,7 +293,9 @@ static char *Dict_Repr(const void *_self)
 	const struct Dict *self = _self;
 	assert(self->class == Dict.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", ((struct Class *)(self))->name, (size_t)self);
+	strcatf(&text, "'<%s object at 0x%x>'", Classof(self)->name, (size_t)self);
+	assert(text);
+	return text;
 }
 
 static bool Dict_Bool(const void *_self)
@@ -317,8 +329,13 @@ static void Dict_Setitem(void *_self, const void *_key, const void *_value)
 	struct Dict *self = _self;
 	assert(self->class == Dict.Class);
 	size_t index = Dict.Hash(self, _key);
+	if (self->keys[index] != NULL) {
+		Del(self->keys[index]);
+		Del(self->values[index]);
+	}
 	self->values[index] = Copy(_value);
 	self->keys[index] = Copy(_key);
+	self->size++;
 }
 
 static void Dict_Delitem(void *_self, const void *_key)
@@ -326,8 +343,11 @@ static void Dict_Delitem(void *_self, const void *_key)
 	struct Dict *self = _self;
 	assert(self->class == Dict.Class);
 	size_t index = Dict.Hash(self, _key);
-	Del(self->values[index]);
-	Del(self->keys[index]);
+	if (self->keys[index] != NULL) {
+		Del(self->values[index]);
+		Del(self->keys[index]);
+		self->size--;
+	}
 }
 
 static bool Dict_Contains(const void *_self, const void *_other)

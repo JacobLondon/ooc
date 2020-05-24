@@ -12,12 +12,13 @@ struct Vector {
 
 struct NamespaceVector {
 	const void *Class;
-	void (* Clear)(void *_self);
-	void (* Reserve)(void *_self);
-	void (*Shrink_to_fit)(const void *_self);
-	void (* Push_back)(void *_self, const void *_value);
-	void (* Pop_back)(void *_self);
-	size_t (* Find)(const void *_self, const void *_value);
+	void     (* Clear)        (void *_self);
+	void     (* Reserve)      (void *_self, size_t cap);
+	void     (* Shrink_to_fit)(void *_self);
+	void     (* Push_back)    (void *_self, void *_value);
+	void     (* Pop_back)     (void *_self);
+	size_t   (* Find)         (const void *_self, const void *_value);
+	void*    (* Emplace_back) (void *_self, const void *_class, ...);
 };
 
 extern struct NamespaceVector Vector;
