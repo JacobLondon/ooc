@@ -12,59 +12,59 @@
  **********************************************************/
 
 // construction
-static void*         Integer_New           (void *_self, va_list *ap);
-static void*         Integer_Del           (void *_self);
-static void*         Integer_Copy          (const void *_self);
+static var           Integer_New           (var _self, va_list *ap);
+static var           Integer_Del           (var _self);
+static var           Integer_Copy          (const var _self);
 
 // comparison
-static ssize_t       Integer_Cmp           (const void *_self, const void *_other);
-static bool          Integer_Eq            (const void *_self, const void *_other);
-static bool          Integer_Ne            (const void *_self, const void *_other);
-static bool          Integer_Lt            (const void *_self, const void *_other);
-static bool          Integer_Gt            (const void *_self, const void *_other);
-static bool          Integer_Le            (const void *_self, const void *_other);
-static bool          Integer_Ge            (const void *_self, const void *_other);
+static ssize_t       Integer_Cmp           (const var _self, const var _other);
+static bool          Integer_Eq            (const var _self, const var _other);
+static bool          Integer_Ne            (const var _self, const var _other);
+static bool          Integer_Lt            (const var _self, const var _other);
+static bool          Integer_Gt            (const var _self, const var _other);
+static bool          Integer_Le            (const var _self, const var _other);
+static bool          Integer_Ge            (const var _self, const var _other);
 
 // unary
-static void*         Integer_Pos           (const void *_self);
-static void*         Integer_Neg           (const void *_self);
-static void*         Integer_Abs           (const void *_self);
-static void*         Integer_Invert        (const void *_self);
+static var           Integer_Pos           (const var _self);
+static var           Integer_Neg           (const var _self);
+static var           Integer_Abs           (const var _self);
+static var           Integer_Invert        (const var _self);
 
 // arithmetic
-static void*         Integer_Add           (const void *_self, const void *_other);
-static void*         Integer_Sub           (const void *_self, const void *_other);
-static void*         Integer_Mul           (const void *_self, const void *_other);
-static void*         Integer_Div           (const void *_self, const void *_other);
-static void*         Integer_Mod           (const void *_self, const void *_other);
-static void*         Integer_Pow           (const void *_self, const void *_other);
-static void*         Integer_Lshift        (const void *_self, const void *_other);
-static void*         Integer_Rshift        (const void *_self, const void *_other);
-static void*         Integer_And           (const void *_self, const void *_other);
-static void*         Integer_Or            (const void *_self, const void *_other);
-static void*         Integer_Xor           (const void *_self, const void *_other);
+static var           Integer_Add           (const var _self, const var _other);
+static var           Integer_Sub           (const var _self, const var _other);
+static var           Integer_Mul           (const var _self, const var _other);
+static var           Integer_Div           (const var _self, const var _other);
+static var           Integer_Mod           (const var _self, const var _other);
+static var           Integer_Pow           (const var _self, const var _other);
+static var           Integer_Lshift        (const var _self, const var _other);
+static var           Integer_Rshift        (const var _self, const var _other);
+static var           Integer_And           (const var _self, const var _other);
+static var           Integer_Or            (const var _self, const var _other);
+static var           Integer_Xor           (const var _self, const var _other);
 
 // assignment arithmetic
-static void*         Integer_Iadd          (void *_self, const void *_other);
-static void*         Integer_Isub          (void *_self, const void *_other);
-static void*         Integer_Imul          (void *_self, const void *_other);
-static void*         Integer_Idiv          (void *_self, const void *_other);
-static void*         Integer_Imod          (void *_self, const void *_other);
-static void*         Integer_Ipow          (void *_self, const void *_other);
-static void*         Integer_Ilshift       (void *_self, const void *_other);
-static void*         Integer_Irshift       (void *_self, const void *_other);
-static void*         Integer_Iand          (void *_self, const void *_other);
-static void*         Integer_Ior           (void *_self, const void *_other);
-static void*         Integer_Ixor          (void *_self, const void *_other);
+static shared        Integer_Iadd          (var _self, const var _other);
+static shared        Integer_Isub          (var _self, const var _other);
+static shared        Integer_Imul          (var _self, const var _other);
+static shared        Integer_Idiv          (var _self, const var _other);
+static shared        Integer_Imod          (var _self, const var _other);
+static shared        Integer_Ipow          (var _self, const var _other);
+static shared        Integer_Ilshift       (var _self, const var _other);
+static shared        Integer_Irshift       (var _self, const var _other);
+static shared        Integer_Iand          (var _self, const var _other);
+static shared        Integer_Ior           (var _self, const var _other);
+static shared        Integer_Ixor          (var _self, const var _other);
 
 // representation
-static size_t        Integer_Hash          (const void *_self);
-static char*         Integer_Str           (const void *_self);
-static char*         Integer_Repr          (const void *_self);
-static ssize_t       Integer_Int           (const void *_self);
-static size_t        Integer_Uint          (const void *_self);
-static double        Integer_Float         (const void *_self);
-static bool          Integer_Bool          (const void *_self);
+static size_t        Integer_Hash          (const var _self);
+static char*         Integer_Str           (const var _self);
+static char*         Integer_Repr          (const var _self);
+static ssize_t       Integer_Int           (const var _self);
+static size_t        Integer_Uint          (const var _self);
+static double        Integer_Float         (const var _self);
+static bool          Integer_Bool          (const var _self);
 
 /**********************************************************
  * Namespace Function Prototypes
@@ -159,7 +159,7 @@ struct NamespaceInteger Integer = {
  * Construction
  **********************************************************/
 
-static void *Integer_New(void *_self, va_list *ap)
+static var Integer_New(var _self, va_list *ap)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -167,7 +167,7 @@ static void *Integer_New(void *_self, va_list *ap)
 	return self;
 }
 
-static void *Integer_Del(void *_self)
+static var Integer_Del(var _self)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -175,7 +175,7 @@ static void *Integer_Del(void *_self)
 	return self;
 }
 
-static void *Integer_Copy(const void *_self)
+static var Integer_Copy(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -186,7 +186,7 @@ static void *Integer_Copy(const void *_self)
  * Comparison
  **********************************************************/
 
-static ssize_t Integer_Cmp(const void *_self, const void *_other)
+static ssize_t Integer_Cmp(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -195,7 +195,7 @@ static ssize_t Integer_Cmp(const void *_self, const void *_other)
 		if (self->value < Float(_other)) {
 			return -1;
 		}
-		else if (Float(self) == Float(_other)) {
+		else if (Float(_self) == Float(_other)) {
 			return 0;
 		}
 		else {
@@ -214,32 +214,32 @@ static ssize_t Integer_Cmp(const void *_self, const void *_other)
 	}
 }
 
-static bool Integer_Eq(const void *_self, const void *_other)
+static bool Integer_Eq(const var _self, const var _other)
 {
 	return Cmp(_self, _other) == 0;
 }
 
-static bool Integer_Ne(const void *_self, const void *_other)
+static bool Integer_Ne(const var _self, const var _other)
 {
 	return Cmp(_self, _other) != 0;
 }
 
-static bool Integer_Lt(const void *_self, const void *_other)
+static bool Integer_Lt(const var _self, const var _other)
 {
 	return Cmp(_self, _other) < 0;
 }
 
-static bool Integer_Gt(const void *_self, const void *_other)
+static bool Integer_Gt(const var _self, const var _other)
 {
 	return Cmp(_self, _other) > 0;
 }
 
-static bool Integer_Le(const void *_self, const void *_other)
+static bool Integer_Le(const var _self, const var _other)
 {
 	return Cmp(_self, _other) <= 0;
 }
 
-static bool Integer_Ge(const void *_self, const void *_other)
+static bool Integer_Ge(const var _self, const var _other)
 {
 	return Cmp(_self, _other) >= 0;
 }
@@ -248,28 +248,28 @@ static bool Integer_Ge(const void *_self, const void *_other)
  * Unary
  **********************************************************/
 
-static void *Integer_Pos(const void *_self)
+static var Integer_Pos(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return New(Integer.Class, (ssize_t)(self->value < 0 ? +self->value : self->value));
 }
 
-static void *Integer_Neg(const void *_self)
+static var Integer_Neg(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return New(Integer.Class, (ssize_t)(self->value > 0 ? -self->value : self->value));
 }
 
-static void *Integer_Abs(const void *_self)
+static var Integer_Abs(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return New(Integer.Class, (ssize_t)abs(self->value));
 }
 
-static void *Integer_Invert(const void *_self)
+static var Integer_Invert(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -280,7 +280,7 @@ static void *Integer_Invert(const void *_self)
  * Arithmetic
  **********************************************************/
 
-static void *Integer_Add(const void *_self, const void *_other)
+static var Integer_Add(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -291,7 +291,7 @@ static void *Integer_Add(const void *_self, const void *_other)
 	return New(Integer.Class, (ssize_t)(self->value + Int(_other)));
 }
 
-static void *Integer_Sub(const void *_self, const void *_other)
+static var Integer_Sub(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -302,7 +302,7 @@ static void *Integer_Sub(const void *_self, const void *_other)
 	return New(Integer.Class, (ssize_t)(self->value - Int(_other)));
 }
 
-static void *Integer_Mul(const void *_self, const void *_other)
+static var Integer_Mul(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -313,7 +313,7 @@ static void *Integer_Mul(const void *_self, const void *_other)
 	return New(Integer.Class, (ssize_t)(self->value * Int(_other)));
 }
 
-static void *Integer_Div(const void *_self, const void *_other)
+static var Integer_Div(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -324,7 +324,7 @@ static void *Integer_Div(const void *_self, const void *_other)
 	return New(Integer.Class, (ssize_t)(self->value / Int(_other)));
 }
 
-static void *Integer_Mod(const void *_self, const void *_other)
+static var Integer_Mod(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -335,7 +335,7 @@ static void *Integer_Mod(const void *_self, const void *_other)
 	return New(Integer.Class, (ssize_t)(self->value % Int(_other)));
 }
 
-static void *Integer_Pow(const void *_self, const void *_other)
+static var Integer_Pow(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -346,47 +346,47 @@ static void *Integer_Pow(const void *_self, const void *_other)
 	return New(Integer.Class, (ssize_t)pow(self->value, Int(_other)));
 }
 
-static void *Integer_Lshift(const void *_self, const void *_other)
+static var Integer_Lshift(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return New(Integer.Class, (ssize_t)(self->value << Int(_other)));
 }
 
-static void *Integer_Rshift(const void *_self, const void *_other)
+static var Integer_Rshift(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return New(Integer.Class, (ssize_t)(self->value >> Int(_other)));
 }
 
-static void *Integer_And(const void *_self, const void *_other)
+static var Integer_And(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return New(Integer.Class, (ssize_t)(self->value & Int(_other)));
 }
 
-static void *Integer_Or(const void *_self, const void *_other)
+static var Integer_Or(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return New(Integer.Class, (ssize_t)(self->value | Int(_other)));
 }
 
-static void *Integer_Xor(const void *_self, const void *_other)
+static var Integer_Xor(const var _self, const var _other)
 {
 	const struct Integer *self = _self;
 	const struct Integer *other = _other;
 	assert(self->class == Integer.Class);
-	return New(Integer.Class, (ssize_t)(self->value ^ Int(other)));
+	return New(Integer.Class, (ssize_t)(self->value ^ Int(_other)));
 }
 
 /**********************************************************
  * Assignment Arithmetic
  **********************************************************/
 
-static void *Integer_Iadd(void *_self, const void *_other)
+static var Integer_Iadd(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -398,7 +398,7 @@ static void *Integer_Iadd(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Isub(void *_self, const void *_other)
+static var Integer_Isub(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -411,7 +411,7 @@ static void *Integer_Isub(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Imul(void *_self, const void *_other)
+static var Integer_Imul(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -424,7 +424,7 @@ static void *Integer_Imul(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Idiv(void *_self, const void *_other)
+static var Integer_Idiv(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -437,7 +437,7 @@ static void *Integer_Idiv(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Imod(void *_self, const void *_other)
+static var Integer_Imod(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -450,7 +450,7 @@ static void *Integer_Imod(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Ipow(void *_self, const void *_other)
+static var Integer_Ipow(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -463,7 +463,7 @@ static void *Integer_Ipow(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Ilshift(void *_self, const void *_other)
+static var Integer_Ilshift(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -471,7 +471,7 @@ static void *Integer_Ilshift(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Irshift(void *_self, const void *_other)
+static var Integer_Irshift(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -480,7 +480,7 @@ static void *Integer_Irshift(void *_self, const void *_other)
 
 }
 
-static void *Integer_Iand(void *_self, const void *_other)
+static var Integer_Iand(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -488,7 +488,7 @@ static void *Integer_Iand(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Ior(void *_self, const void *_other)
+static var Integer_Ior(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -496,7 +496,7 @@ static void *Integer_Ior(void *_self, const void *_other)
 	return self;
 }
 
-static void *Integer_Ixor(void *_self, const void *_other)
+static var Integer_Ixor(var _self, const var _other)
 {
 	struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -508,14 +508,14 @@ static void *Integer_Ixor(void *_self, const void *_other)
  * Representation
  **********************************************************/
 
-static size_t Integer_Hash(const void *_self)
+static size_t Integer_Hash(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return fnv1a(&self->value, sizeof(self->value));
 }
 
-static char *Integer_Str(const void *_self)
+static char *Integer_Str(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -525,7 +525,7 @@ static char *Integer_Str(const void *_self)
 	return text;
 }
 
-static char *Integer_Repr(const void *_self)
+static char *Integer_Repr(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
@@ -535,28 +535,28 @@ static char *Integer_Repr(const void *_self)
 	return text;
 }
 
-static ssize_t Integer_Int(const void *_self)
+static ssize_t Integer_Int(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return (ssize_t)self->value;
 }
 
-static size_t Integer_Uint(const void *_self)
+static size_t Integer_Uint(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return (size_t)self->value;
 }
 
-static double Integer_Float(const void *_self)
+static double Integer_Float(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	return (double)self->value;
 }
 
-static bool Integer_Bool(const void *_self)
+static bool Integer_Bool(const var _self)
 {
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);

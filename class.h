@@ -8,6 +8,9 @@
 #include <stddef.h>
 #include <sys/types.h>
 
+typedef void *var;
+typedef void *shared;
+
 struct Class {
 	size_t size;
 	const struct Class *class;
@@ -15,153 +18,153 @@ struct Class {
 	const char*  name;
 
 	// construction
-	void*   (* New)        (void *_self, va_list *ap);
-	void*   (* Del)        (void *_self);
-	void*   (* Copy)       (const void *_self);
+	var      (* New)        (var _self, va_list *ap);
+	var      (* Del)        (var _self);
+	var      (* Copy)       (const var _self);
 
 	// comparison
-	ssize_t (* Cmp)        (const void *_self, const void *_other);
-	bool    (* Eq)         (const void *_self, const void *_other);
-	bool    (* Ne)         (const void *_self, const void *_other);
-	bool    (* Lt)         (const void *_self, const void *_other);
-	bool    (* Gt)         (const void *_self, const void *_other);
-	bool    (* Le)         (const void *_self, const void *_other);
-	bool    (* Ge)         (const void *_self, const void *_other);
+	ssize_t  (* Cmp)        (const var _self, const var _other);
+	bool     (* Eq)         (const var _self, const var _other);
+	bool     (* Ne)         (const var _self, const var _other);
+	bool     (* Lt)         (const var _self, const var _other);
+	bool     (* Gt)         (const var _self, const var _other);
+	bool     (* Le)         (const var _self, const var _other);
+	bool     (* Ge)         (const var _self, const var _other);
 
 	// unary
-	void*    (* Pos)       (const void *_self);
-	void*    (* Neg)       (const void *_self);
-	void*    (* Abs)       (const void *_self);
-	void*    (* Invert)    (const void *_self);
-	void*    (* Round)     (const void *_self, size_t n);
-	void*    (* Floor)     (const void *_self);
-	void*    (* Ceil)      (const void *_self);
-	void*    (* Trunc)     (const void *_self);
+	var      (* Pos)       (const var _self);
+	var      (* Neg)       (const var _self);
+	var      (* Abs)       (const var _self);
+	var      (* Invert)    (const var _self);
+	var      (* Round)     (const var _self, size_t n);
+	var      (* Floor)     (const var _self);
+	var      (* Ceil)      (const var _self);
+	var      (* Trunc)     (const var _self);
 
 	// arithmetic
-	void*    (* Add)       (const void *_self, const void *_other);
-	void*    (* Sub)       (const void *_self, const void *_other);
-	void*    (* Mul)       (const void *_self, const void *_other);
-	void*    (* Floordiv)  (const void *_self, const void *_other);
-	void*    (* Div)       (const void *_self, const void *_other);
-	void*    (* Mod)       (const void *_self, const void *_other);
-	void*    (* Pow)       (const void *_self, const void *_other);
-	void*    (* Lshift)    (const void *_self, const void *_other);
-	void*    (* Rshift)    (const void *_self, const void *_other);
-	void*    (* And)       (const void *_self, const void *_other);
-	void*    (* Or)        (const void *_self, const void *_other);
-	void*    (* Xor)       (const void *_self, const void *_other);
+	var      (* Add)       (const var _self, const var _other);
+	var      (* Sub)       (const var _self, const var _other);
+	var      (* Mul)       (const var _self, const var _other);
+	var      (* Floordiv)  (const var _self, const var _other);
+	var      (* Div)       (const var _self, const var _other);
+	var      (* Mod)       (const var _self, const var _other);
+	var      (* Pow)       (const var _self, const var _other);
+	var      (* Lshift)    (const var _self, const var _other);
+	var      (* Rshift)    (const var _self, const var _other);
+	var      (* And)       (const var _self, const var _other);
+	var      (* Or)        (const var _self, const var _other);
+	var      (* Xor)       (const var _self, const var _other);
 
 	// assignment arithmetic
-	void*    (* Iadd)      (void *_self, const void *_other);
-	void*    (* Isub)      (void *_self, const void *_other);
-	void*    (* Imul)      (void *_self, const void *_other);
-	void*    (* Ifloordiv) (void *_self, const void *_other);
-	void*    (* Idiv)      (void *_self, const void *_other);
-	void*    (* Imod)      (void *_self, const void *_other);
-	void*    (* Ipow)      (void *_self, const void *_other);
-	void*    (* Ilshift)   (void *_self, const void *_other);
-	void*    (* Irshift)   (void *_self, const void *_other);
-	void*    (* Iand)      (void *_self, const void *_other);
-	void*    (* Ior)       (void *_self, const void *_other);
-	void*    (* Ixor)      (void *_self, const void *_other);
+	shared   (* Iadd)      (var _self, const var _other);
+	shared   (* Isub)      (var _self, const var _other);
+	shared   (* Imul)      (var _self, const var _other);
+	shared   (* Ifloordiv) (var _self, const var _other);
+	shared   (* Idiv)      (var _self, const var _other);
+	shared   (* Imod)      (var _self, const var _other);
+	shared   (* Ipow)      (var _self, const var _other);
+	shared   (* Ilshift)   (var _self, const var _other);
+	shared   (* Irshift)   (var _self, const var _other);
+	shared   (* Iand)      (var _self, const var _other);
+	shared   (* Ior)       (var _self, const var _other);
+	shared   (* Ixor)      (var _self, const var _other);
 
 	// representation
-	size_t   (* Hash)      (const void *_self);
-	char*    (* Str)       (const void *_self);
-	char*    (* Repr)      (const void *_self);
-	ssize_t  (* Int)       (const void *_self);
-	size_t   (* Uint)      (const void *_self);
-	double   (* Float)     (const void *_self);
-	bool     (* Bool)      (const void *_self);
+	size_t   (* Hash)      (const var _self);
+	char*    (* Str)       (const var _self);
+	char*    (* Repr)      (const var _self);
+	ssize_t  (* Int)       (const var _self);
+	size_t   (* Uint)      (const var _self);
+	double   (* Float)     (const var _self);
+	bool     (* Bool)      (const var _self);
 
 	// containers
-	size_t   (* Len)       (const void *_self);
-	void*    (* Getitem)   (const void *_self, const void *_key);
-	void     (* Setitem)   (void *_self, const void *_key, const void *_value);
-	void     (* Delitem)   (void *_self, const void *_key);
-	void*    (* Iter)      (const void *_self);
-	void*    (* Reversed)  (const void *_self);
-	bool     (* Contains)  (const void *_self, const void *_other);
+	size_t   (* Len)       (const var _self);
+	shared   (* Getitem)   (const var _self, const var _key);
+	void     (* Setitem)   (var _self, const var _key, const var _value);
+	void     (* Delitem)   (var _self, const var _key);
+	var      (* Iter)      (const var _self);
+	var      (* Reversed)  (const var _self);
+	bool     (* Contains)  (const var _self, const var _other);
 };
 
 // class-neutral introspection
-size_t        Sizeof        (const void *_self);
+size_t        Sizeof        (const var _self);
 const void*   Super         (const void *_self);
-const void*   Type          (const void *_self);
-bool          Isinstance    (const void *_self, const void *_class);
-bool          Issubclass    (const void *_self, const void *_class);
+const void*   Type          (const var _self);
+bool          Isinstance    (const void *_class, const var _other);
+bool          Issubclass    (const var _self, const void *_class);
 
 // construction
-void*         New           (const void *_class, ...);
-void          Del           (void *_self);
-void*         Copy          (const void *_self);
-void*         Vnew          (const void *_class, va_list *ap);
+var           New           (const void *_class, ...);
+void          Del           (var _self);
+var           Copy          (const var _self);
+var           Vnew          (const void *_class, va_list *ap);
 
 // comparison
-ssize_t       Cmp           (const void *_self, const void *_other);
-bool          Eq            (const void *_self, const void *_other);
-bool          Ne            (const void *_self, const void *_other);
-bool          Lt            (const void *_self, const void *_other);
-bool          Gt            (const void *_self, const void *_other);
-bool          Le            (const void *_self, const void *_other);
-bool          Ge            (const void *_self, const void *_other);
+ssize_t       Cmp           (const var _self, const var _other);
+bool          Eq            (const var _self, const var _other);
+bool          Ne            (const var _self, const var _other);
+bool          Lt            (const var _self, const var _other);
+bool          Gt            (const var _self, const var _other);
+bool          Le            (const var _self, const var _other);
+bool          Ge            (const var _self, const var _other);
 
 // unary
-void*         Pos           (const void *_self);
-void*         Neg           (const void *_self);
-void*         Abs           (const void *_self);
-void*         Invert        (const void *_self);
-void*         Round         (const void *_self, size_t n);
-void*         Floor         (const void *_self);
-void*         Ceil          (const void *_self);
-void*         Trunc         (const void *_self);
+var           Pos           (const var _self);
+var           Neg           (const var _self);
+var           Abs           (const var _self);
+var           Invert        (const var _self);
+var           Round         (const var _self, size_t n);
+var           Floor         (const var _self);
+var           Ceil          (const var _self);
+var           Trunc         (const var _self);
 
 // arithmetic
-void*         Add           (const void *_self, const void *_other);
-void*         Sub           (const void *_self, const void *_other);
-void*         Mul           (const void *_self, const void *_other);
-void*         Floordiv      (const void *_self, const void *_other);
-void*         Div           (const void *_self, const void *_other);
-void*         Mod           (const void *_self, const void *_other);
-void*         Pow           (const void *_self, const void *_other);
-void*         Lshift        (const void *_self, const void *_other);
-void*         Rshift        (const void *_self, const void *_other);
-void*         And           (const void *_self, const void *_other);
-void*         Or            (const void *_self, const void *_other);
-void*         Xor           (const void *_self, const void *_other);
+var           Add           (const var _self, const var _other);
+var           Sub           (const var _self, const var _other);
+var           Mul           (const var _self, const var _other);
+var           Floordiv      (const var _self, const var _other);
+var           Div           (const var _self, const var _other);
+var           Mod           (const var _self, const var _other);
+var           Pow           (const var _self, const var _other);
+var           Lshift        (const var _self, const var _other);
+var           Rshift        (const var _self, const var _other);
+var           And           (const var _self, const var _other);
+var           Or            (const var _self, const var _other);
+var           Xor           (const var _self, const var _other);
 
 // assignment arithmetic
-void*         Iadd          (void *_self, const void *_other);
-void*         Isub          (void *_self, const void *_other);
-void*         Imul          (void *_self, const void *_other);
-void*         Ifloordiv     (void *_self, const void *_other);
-void*         Idiv          (void *_self, const void *_other);
-void*         Imod          (void *_self, const void *_other);
-void*         Ipow          (void *_self, const void *_other);
-void*         Ilshift       (void *_self, const void *_other);
-void*         Irshift       (void *_self, const void *_other);
-void*         Iand          (void *_self, const void *_other);
-void*         Ior           (void *_self, const void *_other);
-void*         Ixor          (void *_self, const void *_other);
+shared        Iadd          (var _self, const var _other);
+shared        Isub          (var _self, const var _other);
+shared        Imul          (var _self, const var _other);
+shared        Ifloordiv     (var _self, const var _other);
+shared        Idiv          (var _self, const var _other);
+shared        Imod          (var _self, const var _other);
+shared        Ipow          (var _self, const var _other);
+shared        Ilshift       (var _self, const var _other);
+shared        Irshift       (var _self, const var _other);
+shared        Iand          (var _self, const var _other);
+shared        Ior           (var _self, const var _other);
+shared        Ixor          (var _self, const var _other);
 
 // representation
-size_t        Hash          (const void *_self);
-char*         Str           (const void *_self);
-char*         Repr          (const void *_self);
-ssize_t       Int           (const void *_self);
-size_t        Uint          (const void *_self);
-double        Float         (const void *_self);
-bool          Bool          (const void *_self);
+size_t        Hash          (const var _self);
+char*         Str           (const var _self);
+char*         Repr          (const var _self);
+ssize_t       Int           (const var _self);
+size_t        Uint          (const var _self);
+double        Float         (const var _self);
+bool          Bool          (const var _self);
 
 // containers
-size_t        Len           (const void *_self);
-void*         Getitem       (const void *_self, const void *_key);
-void          Setitem       (void *_self, const void *_key, const void *_value);
-void          Delitem       (void *_self, const void *_key);
-void*         Iter          (const void *_self);
-void*         Reversed      (const void *_self);
-bool          Contains      (const void *_self, const void *_other);
+size_t        Len           (const var _self);
+shared        Getitem       (const var _self, const var _key);
+void          Setitem       (var _self, const var _key, const var _value);
+void          Delitem       (var _self, const var _key);
+var           Iter          (const var _self);
+var           Reversed      (const var _self);
+bool          Contains      (const var _self, const var _other);
 
 /* Empty Definition
 static const struct Class class = {
@@ -249,6 +252,5 @@ static const struct Class class = {
 #define Classof(Object) ((struct Class *)Object)
 
 void println(const char *_fmt, ...);
-typedef void *var;
 
 #endif /* OOC_CLASS_H */

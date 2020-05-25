@@ -15,41 +15,41 @@
  **********************************************************/
 
 // construction
-static void*         Vector_New           (void *_self, va_list *ap);
-static void*         Vector_Del           (void *_self);
-static void*         Vector_Copy          (const void *_self);
+static var           Vector_New           (var _self, va_list *ap);
+static var           Vector_Del           (var _self);
+static var           Vector_Copy          (const var _self);
 
 // comparison
-static bool          Vector_Eq            (const void *_self, const void *_other);
-static bool          Vector_Ne            (const void *_self, const void *_other);
+static bool          Vector_Eq            (const var _self, const var _other);
+static bool          Vector_Ne            (const var _self, const var _other);
 
 // unary
 // arithmetic
 // assignment arithmetic
 
 // representation
-static char*         Vector_Str           (const void *_self);
-static char*         Vector_Repr          (const void *_self);
-static bool          Vector_Bool          (const void *_self);
+static char*         Vector_Str           (const var _self);
+static char*         Vector_Repr          (const var _self);
+static bool          Vector_Bool          (const var _self);
 
 // containers
-static size_t        Vector_Len           (const void *_self);
-static void*         Vector_Getitem       (const void *_self, const void *_key);
-static void          Vector_Setitem       (void *_self, const void *_key, const void *_value);
-static void          Vector_Delitem       (void *_self, const void *_key);
-static bool          Vector_Contains      (const void *_self, const void *_other);
+static size_t        Vector_Len           (const var _self);
+static shared        Vector_Getitem       (const var _self, const var _key);
+static void          Vector_Setitem       (var _self, const var _key, const var _value);
+static void          Vector_Delitem       (var _self, const var _key);
+static bool          Vector_Contains      (const var _self, const var _other);
 
 /**********************************************************
  * Namespace Function Prototypes
  **********************************************************/
 
-static void          NamespaceVector_Clear        (void *_self);
-static void          NamespaceVector_Reserve      (void *_self, size_t cap);
-static void          NamespaceVector_Shrink_to_fit(void *_self);
-static void          NamespaceVector_Push_back    (void *_self, void *_value);
-static void          NamespaceVector_Pop_back     (void *_self);
-static size_t        NamespaceVector_Find         (const void *_self, const void *_value);
-static void*         NamespaceVector_Emplace_back (void *_self, const void *_class, ...);
+static void          NamespaceVector_Clear        (var _self);
+static void          NamespaceVector_Reserve      (var _self, size_t cap);
+static void          NamespaceVector_Shrink_to_fit(var _self);
+static void          NamespaceVector_Push_back    (var _self, var _value);
+static void          NamespaceVector_Pop_back     (var _self);
+static size_t        NamespaceVector_Find         (const var _self, const var _value);
+static void          NamespaceVector_Emplace_back (var _self, const void *_class, ...);
 
 /**********************************************************
  * Definitions
@@ -146,12 +146,12 @@ struct NamespaceVector Vector = {
  * Construction
  **********************************************************/
 
-static void *Vector_New(void *_self, va_list *ap)
+static var Vector_New(var _self, va_list *ap)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 
-	self->buf = calloc(VECTOR_DEFAULT_CAP, sizeof(void *));
+	self->buf = calloc(VECTOR_DEFAULT_CAP, sizeof(var));
 	assert(self->buf);
 
 	self->size = 0;
@@ -160,7 +160,7 @@ static void *Vector_New(void *_self, va_list *ap)
 	return self;
 }
 
-static void *Vector_Del(void *_self)
+static var Vector_Del(var _self)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -180,11 +180,11 @@ static void *Vector_Del(void *_self)
 	return self;
 }
 
-static void *Vector_Copy(const void *_self)
+static var Vector_Copy(const var _self)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
-	void *_new = New(Vector.Class);
+	var _new = New(Vector.Class);
 	struct Vector *new = _new;
 
 	for (size_t i = 0; i < self->size; i++) {
@@ -198,7 +198,7 @@ static void *Vector_Copy(const void *_self)
  * Comparison
  **********************************************************/
 
-static bool Vector_Eq(const void *_self, const void *_other)
+static bool Vector_Eq(const var _self, const var _other)
 {
 	const struct Vector *self = _self;
 	const struct Vector *other = _other;
@@ -217,7 +217,7 @@ static bool Vector_Eq(const void *_self, const void *_other)
 	return true;
 }
 
-static bool Vector_Ne(const void *_self, const void *_other)
+static bool Vector_Ne(const var _self, const var _other)
 {
 	return !Vector_Eq(_self, _other);
 }
@@ -238,20 +238,22 @@ static bool Vector_Ne(const void *_self, const void *_other)
  * Representation
  **********************************************************/
 
-static char *Vector_Str(const void *_self)
+static char *Vector_Str(const var _self)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	size_t i;
 	char *value;
-	char *text = strdup("[");
-	assert(text);
+	char *text;
 
 	if (self->size == 0) {
-		strcatf(&text, "]");
+		text = strdup("[]");
+		assert(text);
 		return text;
 	}
 
+	text = strdup("[");
+	assert(text);
 	for (i = 0; i < self->size; i++) {
 		value = Str(self->buf[i]);
 		strcatf(&text, "%s, ", value);
@@ -262,7 +264,7 @@ static char *Vector_Str(const void *_self)
 	return text;
 }
 
-static char *Vector_Repr(const void *_self)
+static char *Vector_Repr(const var _self)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -272,7 +274,7 @@ static char *Vector_Repr(const void *_self)
 	return text;
 }
 
-static bool Vector_Bool(const void *_self)
+static bool Vector_Bool(const var _self)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -283,21 +285,21 @@ static bool Vector_Bool(const void *_self)
  * Containers
  **********************************************************/
 
-static size_t Vector_Len(const void *_self)
+static size_t Vector_Len(const var _self)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	return self->size;
 }
 
-static void *Vector_Getitem(const void *_self, const void *_key)
+static var Vector_Getitem(const var _self, const var _key)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	return self->buf[Uint(_key)];
 }
 
-static void Vector_Setitem(void *_self, const void *_key, const void *_value)
+static void Vector_Setitem(var _self, const var _key, const var _value)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -308,7 +310,7 @@ static void Vector_Setitem(void *_self, const void *_key, const void *_value)
 	self->buf[idx] = Copy(_value);
 }
 
-static void Vector_Delitem(void *_self, const void *_key)
+static void Vector_Delitem(var _self, const var _key)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -322,7 +324,7 @@ static void Vector_Delitem(void *_self, const void *_key)
 	self->size--;
 }
 
-static bool Vector_Contains(const void *_self, const void *_other)
+static bool Vector_Contains(const var _self, const var _other)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -340,7 +342,7 @@ static bool Vector_Contains(const void *_self, const void *_other)
  * Namespace Functions
  **********************************************************/
 
-static void NamespaceVector_Clear(void *_self)
+static void NamespaceVector_Clear(var _self)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -353,11 +355,11 @@ static void NamespaceVector_Clear(void *_self)
 	self->size = 0;
 }
 
-static void NamespaceVector_Reserve(void *_self, size_t cap)
+static void NamespaceVector_Reserve(var _self, size_t cap)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
-	void *tmp;
+	var tmp;
 	size_t i;
 
 	/* del items that will be truncated off if shrinking */
@@ -371,13 +373,13 @@ static void NamespaceVector_Reserve(void *_self, size_t cap)
 	}
 
 	/* more space is being allocated */
-	tmp = realloc(self->buf, cap * sizeof(void *));
+	tmp = realloc(self->buf, cap * sizeof(var));
 	assert(tmp);
 	self->buf = tmp;
 	self->cap = cap;
 }
 
-static void NamespaceVector_Shrink_to_fit(void *_self)
+static void NamespaceVector_Shrink_to_fit(var _self)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -385,7 +387,7 @@ static void NamespaceVector_Shrink_to_fit(void *_self)
 	NamespaceVector_Reserve(self, self->size);
 }
 
-static void NamespaceVector_Push_back(void *_self, void *_value)
+static void NamespaceVector_Push_back(var _self, var _value)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -396,7 +398,7 @@ static void NamespaceVector_Push_back(void *_self, void *_value)
 	self->buf[self->size++] = _value;
 }
 
-static void NamespaceVector_Pop_back(void *_self)
+static void NamespaceVector_Pop_back(var _self)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -407,7 +409,7 @@ static void NamespaceVector_Pop_back(void *_self)
 	self->size--;
 }
 
-static size_t NamespaceVector_Find(const void *_self, const void *_value)
+static size_t NamespaceVector_Find(const var _self, const var _value)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
@@ -421,11 +423,11 @@ static size_t NamespaceVector_Find(const void *_self, const void *_value)
 	return SIZE_MAX;
 }
 
-static void *NamespaceVector_Emplace_back(void *_self, const void *_class, ...)
+static void NamespaceVector_Emplace_back(var _self, const void *_class, ...)
 {
 	struct Vector *self = _self;
 	va_list ap;
-	void *ret;
+	var ret;
 	assert(self->class == Vector.Class);
 
 	if (self->size + 1 >= self->cap) {
@@ -435,6 +437,4 @@ static void *NamespaceVector_Emplace_back(void *_self, const void *_class, ...)
 	ret = Vnew(_class, &ap);
 	self->buf[self->size++] = ret;
 	va_end(ap);
-
-	return ret;
 }

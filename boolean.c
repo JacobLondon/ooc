@@ -9,22 +9,22 @@
  **********************************************************/
 
 // construction
-static void*         Boolean_New           (void *_self, va_list *ap);
-static void*         Boolean_Del           (void *_self);
-static void*         Boolean_Copy          (const void *_self);
+static var           Boolean_New           (var _self, va_list *ap);
+static var           Boolean_Del           (var _self);
+static var           Boolean_Copy          (const var _self);
 
 // comparison
-static bool          Boolean_Eq            (const void *_self, const void *_other);
-static bool          Boolean_Ne            (const void *_self, const void *_other);
+static bool          Boolean_Eq            (const var _self, const var _other);
+static bool          Boolean_Ne            (const var _self, const var _other);
 
 // representation
-static size_t        Boolean_Hash          (const void *_self);
-static char*         Boolean_Str           (const void *_self);
-static char*         Boolean_Repr          (const void *_self);
-static ssize_t       Boolean_Int           (const void *_self);
-static size_t        Boolean_Uint          (const void *_self);
-static double        Boolean_Float         (const void *_self);
-static bool          Boolean_Bool          (const void *_self);
+static size_t        Boolean_Hash          (const var _self);
+static char*         Boolean_Str           (const var _self);
+static char*         Boolean_Repr          (const var _self);
+static ssize_t       Boolean_Int           (const var _self);
+static size_t        Boolean_Uint          (const var _self);
+static double        Boolean_Float         (const var _self);
+static bool          Boolean_Bool          (const var _self);
 
 /**********************************************************
  * Namespace Function Prototypes
@@ -119,7 +119,7 @@ struct NamespaceBoolean Boolean = {
  * Construction
  **********************************************************/
 
-static void *Boolean_New(void *_self, va_list *ap)
+static var Boolean_New(var _self, va_list *ap)
 {
 	struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
@@ -127,7 +127,7 @@ static void *Boolean_New(void *_self, va_list *ap)
 	return self;
 }
 
-static void *Boolean_Del(void *_self)
+static var Boolean_Del(var _self)
 {
 	struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
@@ -135,7 +135,7 @@ static void *Boolean_Del(void *_self)
 	return self;
 }
 
-static void *Boolean_Copy(const void *_self)
+static var Boolean_Copy(const var _self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
@@ -146,7 +146,7 @@ static void *Boolean_Copy(const void *_self)
  * Comparison
  **********************************************************/
 
-static bool Boolean_Eq(const void *_self, const void *_other)
+static bool Boolean_Eq(const var _self, const var _other)
 {
 	const struct Boolean *self = _self;
 	const struct Boolean *other = _other;
@@ -155,7 +155,7 @@ static bool Boolean_Eq(const void *_self, const void *_other)
 	return self->value == Bool(_other);
 }
 
-static bool Boolean_Ne(const void *_self, const void *_other)
+static bool Boolean_Ne(const var _self, const var _other)
 {
 	const struct Boolean *self = _self;
 	const struct Boolean *other = _other;
@@ -181,24 +181,29 @@ static bool Boolean_Ne(const void *_self, const void *_other)
  **********************************************************/
 
 // representation
-static size_t Boolean_Hash(const void *_self)
+static size_t Boolean_Hash(const var _self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
 	return fnv1a(&self->value, sizeof(self->value));
 }
 
-static char *Boolean_Str(const void *_self)
+static char *Boolean_Str(const var _self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
+	char *text = NULL;
 	if (self->value == false) {
-		return strdup("False");
+		text = strdup("False");
 	}
-	return strdup("True");
+	else {
+		text = strdup("True");
+	}
+	assert(text);
+	return text;
 }
 
-static char *Boolean_Repr(const void *_self)
+static char *Boolean_Repr(const var _self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
@@ -207,7 +212,7 @@ static char *Boolean_Repr(const void *_self)
 	return text;
 }
 
-static ssize_t Boolean_Int(const void *_self)
+static ssize_t Boolean_Int(const var _self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
@@ -217,7 +222,7 @@ static ssize_t Boolean_Int(const void *_self)
 	return 1;
 }
 
-static size_t Boolean_Uint(const void *_self)
+static size_t Boolean_Uint(const var _self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
@@ -227,7 +232,7 @@ static size_t Boolean_Uint(const void *_self)
 	return 1;
 }
 
-static double Boolean_Float(const void *_self)
+static double Boolean_Float(const var _self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
@@ -237,7 +242,7 @@ static double Boolean_Float(const void *_self)
 	return 1.0;
 }
 
-static bool Boolean_Bool(const void *_self)
+static bool Boolean_Bool(const var _self)
 {
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);

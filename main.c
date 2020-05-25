@@ -51,23 +51,21 @@ int main(void)
 
 	{
 		var v = New(Vector.Class);
-		var a = Vector.Emplace_back(v, Integer.Class, 100);
-		var b = Vector.Emplace_back(v, Integer.Class, 200);
-		var f = Vector.Emplace_back(v, Real.Class, 123.0);
-		var z = Vector.Emplace_back(v, Boolean.Class, true);
-		var d = Vector.Emplace_back(v, Dict.Class);
+		Vector.Emplace_back(v, Integer.Class, 100);
+		Vector.Emplace_back(v, Integer.Class, 200);
+		Vector.Emplace_back(v, Real.Class, 123.0);
+		Vector.Emplace_back(v, Boolean.Class, true);
+		Vector.Emplace_back(v, Dict.Class);
 		Vector.Emplace_back(v, Vector.Class);
 
-		if (Bool(d)) {
-			println("d has things in it");
+		if (Bool(v)) {
+			println("v has things in it");
 		}
 		else {
-			println("d has nothing in it");
+			println("v has nothing in it");
 		}
 
-		var v2 = Vector.Emplace_back(v, Vector.Class);
-		Imul(f, b);
-		Iadd(a, b);
+		Vector.Emplace_back(v, Vector.Class);
 		println("{}", v);
 		Del(v);
 	}

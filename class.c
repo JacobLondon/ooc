@@ -8,7 +8,7 @@
  * Class-Neutral Introspection
  **********************************************************/
 
-size_t Sizeof(const void *_self)
+size_t Sizeof(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -23,7 +23,7 @@ const void *Super(const void *_self)
 	return (*self)->super;
 }
 
-const void *Type(const void *_self)
+const void *Type(const var _self)
 {
 	const struct Class *self = _self;
 	assert(_self);
@@ -31,12 +31,12 @@ const void *Type(const void *_self)
 	return self->class;
 }
 
-bool Isinstance(const void *_self, const void *_class)
+bool Isinstance(const void *_class, const var _other)
 {
-	return _self && Type(_self);
+	return _other && (Type(_other) == _class);
 }
 
-bool Issubclass(const void *_self, const void *_class)
+bool Issubclass(const var _self, const void *_class)
 {
 	assert(_class);
 	
@@ -61,10 +61,10 @@ bool Issubclass(const void *_self, const void *_class)
  * Construction
  **********************************************************/
 
-void *New(const void *_class, ...)
+var New(const void *_class, ...)
 {
 	const struct Class *class = _class;
-	void *self = calloc(1, class->size);
+	var self = calloc(1, class->size);
 
 	assert(self);
 	/* Technically not a Class *, it is pointing
@@ -83,7 +83,7 @@ void *New(const void *_class, ...)
 	return self;
 }
 
-void Del(void *_self)
+void Del(var _self)
 {
 	const struct Class **self = _self;
 	if (_self && *self && (*self)->Del) {
@@ -92,7 +92,7 @@ void Del(void *_self)
 	}
 }
 
-void *Copy(const void *_self)
+var Copy(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -100,10 +100,10 @@ void *Copy(const void *_self)
 	return (*self)->Copy(_self);
 }
 
-void *Vnew(const void *_class, va_list *ap)
+var Vnew(const void *_class, va_list *ap)
 {
 	const struct Class *class = _class;
-	void *self = calloc(1, class->size);
+	var self = calloc(1, class->size);
 
 	assert(self);
 	/* Technically not a Class *, it is pointing
@@ -123,7 +123,7 @@ void *Vnew(const void *_class, va_list *ap)
  * Comparison
  **********************************************************/
 
-ssize_t Cmp(const void *_self, const void *_other)
+ssize_t Cmp(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -132,7 +132,7 @@ ssize_t Cmp(const void *_self, const void *_other)
 	return (*self)->Cmp(_self, _other);
 }
 
-bool Eq(const void *_self, const void *_other)
+bool Eq(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -141,7 +141,7 @@ bool Eq(const void *_self, const void *_other)
 	return (*self)->Eq(_self, _other);
 }
 // TODO: change assertions to follow above format
-bool Ne(const void *_self, const void *_other)
+bool Ne(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -149,7 +149,7 @@ bool Ne(const void *_self, const void *_other)
 	return (*self)->Ne(_self, _other);
 }
 
-bool Lt(const void *_self, const void *_other)
+bool Lt(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -157,7 +157,7 @@ bool Lt(const void *_self, const void *_other)
 	return (*self)->Lt(_self, _other);
 }
 
-bool Gt(const void *_self, const void *_other)
+bool Gt(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -165,7 +165,7 @@ bool Gt(const void *_self, const void *_other)
 	return (*self)->Gt(_self, _other);
 }
 
-bool Le(const void *_self, const void *_other)
+bool Le(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -173,7 +173,7 @@ bool Le(const void *_self, const void *_other)
 	return (*self)->Le(_self, _other);
 }
 
-bool Ge(const void *_self, const void *_other)
+bool Ge(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -185,7 +185,7 @@ bool Ge(const void *_self, const void *_other)
  * Unary
  **********************************************************/
 
-void *Pos(const void *_self)
+var Pos(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -193,7 +193,7 @@ void *Pos(const void *_self)
 	return (*self)->Pos(_self);
 }
 
-void *Neg(const void *_self)
+var Neg(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -201,7 +201,7 @@ void *Neg(const void *_self)
 	return (*self)->Neg(_self);
 }
 
-void *Abs(const void *_self)
+var Abs(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -209,7 +209,7 @@ void *Abs(const void *_self)
 	return (*self)->Abs(_self);
 }
 
-void *Invert(const void *_self)
+var Invert(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -217,7 +217,7 @@ void *Invert(const void *_self)
 	return (*self)->Invert(_self);
 }
 
-void *Round(const void *_self, size_t n)
+var Round(const var _self, size_t n)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -225,7 +225,7 @@ void *Round(const void *_self, size_t n)
 	return (*self)->Round(_self, n);
 }
 
-void *Floor(const void *_self)
+var Floor(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -233,7 +233,7 @@ void *Floor(const void *_self)
 	return (*self)->Floor(_self);
 }
 
-void *Ceil(const void *_self)
+var Ceil(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -241,7 +241,7 @@ void *Ceil(const void *_self)
 	return (*self)->Ceil(_self);
 }
 
-void *Trunc(const void *_self)
+var Trunc(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -253,7 +253,7 @@ void *Trunc(const void *_self)
  * Arithmetic
  **********************************************************/
 
-void *Add(const void *_self, const void *_other)
+var Add(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -261,7 +261,7 @@ void *Add(const void *_self, const void *_other)
 	return (*self)->Add(_self, _other);
 }
 
-void *Sub(const void *_self, const void *_other)
+var Sub(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -269,7 +269,7 @@ void *Sub(const void *_self, const void *_other)
 	return (*self)->Sub(_self, _other);
 }
 
-void *Mul(const void *_self, const void *_other)
+var Mul(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -277,7 +277,7 @@ void *Mul(const void *_self, const void *_other)
 	return (*self)->Mul(_self, _other);
 }
 
-void *Floordiv(const void *_self, const void *_other)
+var Floordiv(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -285,7 +285,7 @@ void *Floordiv(const void *_self, const void *_other)
 	return (*self)->Floordiv(_self, _other);
 }
 
-void *Div(const void *_self, const void *_other)
+var Div(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -293,7 +293,7 @@ void *Div(const void *_self, const void *_other)
 	return (*self)->Div(_self, _other);
 }
 
-void *Mod(const void *_self, const void *_other)
+var Mod(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -301,7 +301,7 @@ void *Mod(const void *_self, const void *_other)
 	return (*self)->Mod(_self, _other);
 }
 
-void *Pow(const void *_self, const void *_other)
+var Pow(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -309,7 +309,7 @@ void *Pow(const void *_self, const void *_other)
 	return (*self)->Pow(_self, _other);
 }
 
-void *Lshift(const void *_self, const void *_other)
+var Lshift(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -317,7 +317,7 @@ void *Lshift(const void *_self, const void *_other)
 	return (*self)->Lshift(_self, _other);
 }
 
-void *Rshift(const void *_self, const void *_other)
+var Rshift(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -325,7 +325,7 @@ void *Rshift(const void *_self, const void *_other)
 	return (*self)->Rshift(_self, _other);
 }
 
-void *And(const void *_self, const void *_other)
+var And(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -333,7 +333,7 @@ void *And(const void *_self, const void *_other)
 	return (*self)->And(_self, _other);
 }
 
-void *Or(const void *_self, const void *_other)
+var Or(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -341,7 +341,7 @@ void *Or(const void *_self, const void *_other)
 	return (*self)->Or(_self, _other);
 }
 
-void *Xor(const void *_self, const void *_other)
+var Xor(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -353,7 +353,7 @@ void *Xor(const void *_self, const void *_other)
  * Assignment Arithmetic
  **********************************************************/
 
-void *Iadd(void *_self, const void *_other)
+shared Iadd(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -361,7 +361,7 @@ void *Iadd(void *_self, const void *_other)
 	return (*self)->Iadd(_self, _other);
 }
 
-void *Isub(void *_self, const void *_other)
+shared Isub(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -369,7 +369,7 @@ void *Isub(void *_self, const void *_other)
 	return (*self)->Isub(_self, _other);
 }
 
-void *Imul(void *_self, const void *_other)
+shared Imul(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -377,7 +377,7 @@ void *Imul(void *_self, const void *_other)
 	return (*self)->Imul(_self, _other);
 }
 
-void *Ifloordiv(void *_self, const void *_other)
+shared Ifloordiv(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -385,7 +385,7 @@ void *Ifloordiv(void *_self, const void *_other)
 	return (*self)->Ifloordiv(_self, _other);
 }
 
-void *Idiv(void *_self, const void *_other)
+shared Idiv(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -393,7 +393,7 @@ void *Idiv(void *_self, const void *_other)
 	return (*self)->Idiv(_self, _other);
 }
 
-void *Imod(void *_self, const void *_other)
+shared Imod(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -401,7 +401,7 @@ void *Imod(void *_self, const void *_other)
 	return (*self)->Imod(_self, _other);
 }
 
-void *Ipow(void *_self, const void *_other)
+shared Ipow(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -409,7 +409,7 @@ void *Ipow(void *_self, const void *_other)
 	return (*self)->Ipow(_self, _other);
 }
 
-void *Ilshift(void *_self, const void *_other)
+shared Ilshift(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -417,7 +417,7 @@ void *Ilshift(void *_self, const void *_other)
 	return (*self)->Ilshift(_self, _other);
 }
 
-void *Irshift(void *_self, const void *_other)
+shared Irshift(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -425,7 +425,7 @@ void *Irshift(void *_self, const void *_other)
 	return (*self)->Irshift(_self, _other);
 }
 
-void *Iand(void *_self, const void *_other)
+shared Iand(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -433,7 +433,7 @@ void *Iand(void *_self, const void *_other)
 	return (*self)->Iand(_self, _other);
 }
 
-void *Ior(void *_self, const void *_other)
+shared Ior(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -441,7 +441,7 @@ void *Ior(void *_self, const void *_other)
 	return (*self)->Ior(_self, _other);
 }
 
-void *Ixor(void *_self, const void *_other)
+shared Ixor(var _self, const var _other)
 {
 	struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -453,7 +453,7 @@ void *Ixor(void *_self, const void *_other)
  * Representation
  **********************************************************/
 
-size_t Hash(const void *_self)
+size_t Hash(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -461,7 +461,7 @@ size_t Hash(const void *_self)
 	return (*self)->Hash(_self);
 }
 
-char *Str(const void *_self)
+char *Str(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -469,7 +469,7 @@ char *Str(const void *_self)
 	return (*self)->Str(_self);
 }
 
-char *Repr(const void *_self)
+char *Repr(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -477,7 +477,7 @@ char *Repr(const void *_self)
 	return (*self)->Repr(_self);
 }
 
-ssize_t Int(const void *_self)
+ssize_t Int(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -485,7 +485,7 @@ ssize_t Int(const void *_self)
 	return (*self)->Int(_self);
 }
 
-size_t Uint(const void *_self)
+size_t Uint(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -493,7 +493,7 @@ size_t Uint(const void *_self)
 	return (*self)->Uint(_self);
 }
 
-double Float(const void *_self)
+double Float(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -501,7 +501,7 @@ double Float(const void *_self)
 	return (*self)->Float(_self);
 }
 
-bool Bool(const void *_self)
+bool Bool(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -514,7 +514,7 @@ bool Bool(const void *_self)
  * Containers
  **********************************************************/
 
-size_t Len(const void *_self)
+size_t Len(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -522,7 +522,7 @@ size_t Len(const void *_self)
 	return (*self)->Len(_self);
 }
 
-void *Getitem(const void *_self, const void *_key)
+shared Getitem(const var _self, const var _key)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _key);
@@ -530,7 +530,7 @@ void *Getitem(const void *_self, const void *_key)
 	return (*self)->Getitem(_self, _key);
 }
 
-void Setitem(void *_self, const void *_key, const void *_value)
+void Setitem(var _self, const var _key, const var _value)
 {
 	struct Class **self = _self;
 	const struct Class *const *value = _value;
@@ -540,7 +540,7 @@ void Setitem(void *_self, const void *_key, const void *_value)
 	(*self)->Setitem(_self, _key, _value);
 }
 
-void Delitem(void *_self, const void *_key)
+void Delitem(var _self, const var _key)
 {
 	struct Class **self = _self;
 	assert(_self && *self && _key);
@@ -548,7 +548,7 @@ void Delitem(void *_self, const void *_key)
 	(*self)->Delitem(_self, _key);
 }
 
-void *Iter(const void *_self)
+var Iter(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -556,7 +556,7 @@ void *Iter(const void *_self)
 	return (*self)->Iter(_self);
 }
 
-void *Reversed(const void *_self)
+var Reversed(const var _self)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self);
@@ -564,7 +564,7 @@ void *Reversed(const void *_self)
 	return (*self)->Reversed(_self);
 }
 
-bool Contains(const void *_self, const void *_other)
+bool Contains(const var _self, const var _other)
 {
 	const struct Class *const *self = _self;
 	assert(_self && *self && _other);
@@ -577,13 +577,13 @@ void println(const char *_fmt, ...)
 	assert(_fmt);
 	size_t i;
 	va_list ap;
-	void *object;
+	var object;
 	char *value;
 
 	va_start(ap, _fmt);
 	for (i = 0; _fmt[i] != '\0'; i++) {
 		if (_fmt[i] == '{' && _fmt[i + 1] == '}') {
-			object = va_arg(ap, void *);
+			object = va_arg(ap, var);
 			value = Str(object);
 			printf("%s", value);
 			free(value);

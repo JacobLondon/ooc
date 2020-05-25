@@ -3,18 +3,18 @@
 
 struct Dict {
 	const void *class;
-	void **values;
-	void **keys;
+	var *values;
+	var *keys;
 	size_t size;
 	size_t cap;
 };
 
 struct NamespaceDict {
 	const void *Class;
-	void     (* Clear)        (void *_self);
-	void*    (* Reserve)      (void *_self, size_t mod);
-	void     (* Shrink_to_fit)(void *_self);
-	size_t   (* Hash)         (const void *_self, const void *_key);
+	void     (* Clear)        (var _self);
+	var      (* Reserve)      (var _self, size_t mod);
+	void     (* Shrink_to_fit)(var _self);
+	size_t   (* Hash)         (const var _self, const var _key);
 };
 
 extern struct NamespaceDict Dict;

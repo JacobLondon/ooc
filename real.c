@@ -12,54 +12,54 @@
  **********************************************************/
 
 // construction
-static void*         Real_New           (void *_self, va_list *ap);
-static void*         Real_Del           (void *_self);
-static void*         Real_Copy          (const void *_self);
+static var           Real_New           (var _self, va_list *ap);
+static var           Real_Del           (var _self);
+static var           Real_Copy          (const var _self);
 
 // comparison
-static ssize_t       Real_Cmp           (const void *_self, const void *_other);
-static bool          Real_Eq            (const void *_self, const void *_other);
-static bool          Real_Ne            (const void *_self, const void *_other);
-static bool          Real_Lt            (const void *_self, const void *_other);
-static bool          Real_Gt            (const void *_self, const void *_other);
-static bool          Real_Le            (const void *_self, const void *_other);
-static bool          Real_Ge            (const void *_self, const void *_other);
+static ssize_t       Real_Cmp           (const var _self, const var _other);
+static bool          Real_Eq            (const var _self, const var _other);
+static bool          Real_Ne            (const var _self, const var _other);
+static bool          Real_Lt            (const var _self, const var _other);
+static bool          Real_Gt            (const var _self, const var _other);
+static bool          Real_Le            (const var _self, const var _other);
+static bool          Real_Ge            (const var _self, const var _other);
 
 // unary
-static void*         Real_Pos           (const void *_self);
-static void*         Real_Neg           (const void *_self);
-static void*         Real_Abs           (const void *_self);
-static void*         Real_Round         (const void *_self, size_t n);
-static void*         Real_Floor         (const void *_self);
-static void*         Real_Ceil          (const void *_self);
-static void*         Real_Trunc         (const void *_self);
+static var           Real_Pos           (const var _self);
+static var           Real_Neg           (const var _self);
+static var           Real_Abs           (const var _self);
+static var           Real_Round         (const var _self, size_t n);
+static var           Real_Floor         (const var _self);
+static var           Real_Ceil          (const var _self);
+static var           Real_Trunc         (const var _self);
 
 // arithmetic
-static void*         Real_Add           (const void *_self, const void *_other);
-static void*         Real_Sub           (const void *_self, const void *_other);
-static void*         Real_Mul           (const void *_self, const void *_other);
-static void*         Real_Floordiv      (const void *_self, const void *_other);
-static void*         Real_Div           (const void *_self, const void *_other);
-static void*         Real_Mod           (const void *_self, const void *_other);
-static void*         Real_Pow           (const void *_self, const void *_other);
+static var           Real_Add           (const var _self, const var _other);
+static var           Real_Sub           (const var _self, const var _other);
+static var           Real_Mul           (const var _self, const var _other);
+static var           Real_Floordiv      (const var _self, const var _other);
+static var           Real_Div           (const var _self, const var _other);
+static var           Real_Mod           (const var _self, const var _other);
+static var           Real_Pow           (const var _self, const var _other);
 
 // assignment arithmetic
-static void*         Real_Iadd          (void *_self, const void *_other);
-static void*         Real_Isub          (void *_self, const void *_other);
-static void*         Real_Imul          (void *_self, const void *_other);
-static void*         Real_Ifloordiv     (void *_self, const void *_other);
-static void*         Real_Idiv          (void *_self, const void *_other);
-static void*         Real_Imod          (void *_self, const void *_other);
-static void*         Real_Ipow          (void *_self, const void *_other);
+static shared        Real_Iadd          (var _self, const var _other);
+static shared        Real_Isub          (var _self, const var _other);
+static shared        Real_Imul          (var _self, const var _other);
+static shared        Real_Ifloordiv     (var _self, const var _other);
+static shared        Real_Idiv          (var _self, const var _other);
+static shared        Real_Imod          (var _self, const var _other);
+static shared        Real_Ipow          (var _self, const var _other);
 
 // representation
-static size_t        Real_Hash          (const void *_self);
-static char*         Real_Str           (const void *_self);
-static char*         Real_Repr          (const void *_self);
-static ssize_t       Real_Int           (const void *_self);
-static size_t        Real_Uint          (const void *_self);
-static double        Real_Float         (const void *_self);
-static bool          Real_Bool          (const void *_self);
+static size_t        Real_Hash          (const var _self);
+static char*         Real_Str           (const var _self);
+static char*         Real_Repr          (const var _self);
+static ssize_t       Real_Int           (const var _self);
+static size_t        Real_Uint          (const var _self);
+static double        Real_Float         (const var _self);
+static bool          Real_Bool          (const var _self);
 
 /**********************************************************
  * Namespace Function Prototypes
@@ -154,7 +154,7 @@ struct NamespaceReal Real = {
  * Construction
  **********************************************************/
 
-static void *Real_New(void *_self, va_list *ap)
+static var Real_New(var _self, va_list *ap)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -162,7 +162,7 @@ static void *Real_New(void *_self, va_list *ap)
 	return self;
 }
 
-static void *Real_Del(void *_self)
+static var Real_Del(var _self)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -170,7 +170,7 @@ static void *Real_Del(void *_self)
 	return self;
 }
 
-static void *Real_Copy(const void *_self)
+static var Real_Copy(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -181,7 +181,7 @@ static void *Real_Copy(const void *_self)
  * Comparison
  **********************************************************/
 
-static ssize_t Real_Cmp(const void *_self, const void *_other)
+static ssize_t Real_Cmp(const var _self, const var _other)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -190,7 +190,7 @@ static ssize_t Real_Cmp(const void *_self, const void *_other)
 		if (self->value < Float(_other)) {
 			return -1;
 		}
-		else if (Float(self) == Float(_other)) {
+		else if (Float(_self) == Float(_other)) {
 			return 0;
 		}
 		else {
@@ -209,32 +209,32 @@ static ssize_t Real_Cmp(const void *_self, const void *_other)
 	}
 }
 
-static bool Real_Eq(const void *_self, const void *_other)
+static bool Real_Eq(const var _self, const var _other)
 {
 	return Cmp(_self, _other) == 0;
 }
 
-static bool Real_Ne(const void *_self, const void *_other)
+static bool Real_Ne(const var _self, const var _other)
 {
 	return Cmp(_self, _other) != 0;
 }
 
-static bool Real_Lt(const void *_self, const void *_other)
+static bool Real_Lt(const var _self, const var _other)
 {
 	return Cmp(_self, _other) < 0;
 }
 
-static bool Real_Gt(const void *_self, const void *_other)
+static bool Real_Gt(const var _self, const var _other)
 {
 	return Cmp(_self, _other) > 0;
 }
 
-static bool Real_Le(const void *_self, const void *_other)
+static bool Real_Le(const var _self, const var _other)
 {
 	return Cmp(_self, _other) <= 0;
 }
 
-static bool Real_Ge(const void *_self, const void *_other)
+static bool Real_Ge(const var _self, const var _other)
 {
 	return Cmp(_self, _other) >= 0;
 }
@@ -243,49 +243,49 @@ static bool Real_Ge(const void *_self, const void *_other)
  * Unary
  **********************************************************/
 
-static void *Real_Pos(const void *_self)
+static var Real_Pos(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(self->value < 0.0 ? +self->value : self->value));
 }
 
-static void *Real_Neg(const void *_self)
+static var Real_Neg(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(self->value > 0.0 ? -self->value : self->value));
 }
 
-static void *Real_Abs(const void *_self)
+static var Real_Abs(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(fabs(self->value)));
 }
 
-static void *Real_Round(const void *_self, size_t n)
+static var Real_Round(const var _self, size_t n)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(round(self->value)));
 }
 
-static void *Real_Floor(const void *_self)
+static var Real_Floor(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(floor(self->value)));
 }
 
-static void *Real_Ceil(const void *_self)
+static var Real_Ceil(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(ceil(self->value)));
 }
 
-static void *Real_Trunc(const void *_self)
+static var Real_Trunc(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -296,49 +296,49 @@ static void *Real_Trunc(const void *_self)
  * Arithmetic
  **********************************************************/
 
-static void *Real_Add(const void *_self, const void *_other)
+static var Real_Add(const var _self, const var _other)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(self->value + Float(_other)));
 }
 
-static void *Real_Sub(const void *_self, const void *_other)
+static var Real_Sub(const var _self, const var _other)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(self->value - Float(_other)));
 }
 
-static void *Real_Mul(const void *_self, const void *_other)
+static var Real_Mul(const var _self, const var _other)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(self->value * Float(_other)));
 }
 
-static void *Real_Floordiv(const void *_self, const void *_other)
+static var Real_Floordiv(const var _self, const var _other)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)floor(self->value / Float(_other)));
 }
 
-static void *Real_Div(const void *_self, const void *_other)
+static var Real_Div(const var _self, const var _other)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)(self->value / Float(_other)));
 }
 
-static void *Real_Mod(const void *_self, const void *_other)
+static var Real_Mod(const var _self, const var _other)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return New(Real.Class, (double)fmod(self->value, Float(_other)));
 }
 
-static void *Real_Pow(const void *_self, const void *_other)
+static var Real_Pow(const var _self, const var _other)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -349,7 +349,7 @@ static void *Real_Pow(const void *_self, const void *_other)
  * Assignment Arithmetic
  **********************************************************/
 
-static void *Real_Iadd(void *_self, const void *_other)
+static var Real_Iadd(var _self, const var _other)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -357,7 +357,7 @@ static void *Real_Iadd(void *_self, const void *_other)
 	return self;
 }
 
-static void *Real_Isub(void *_self, const void *_other)
+static var Real_Isub(var _self, const var _other)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -365,7 +365,7 @@ static void *Real_Isub(void *_self, const void *_other)
 	return self;
 }
 
-static void *Real_Imul(void *_self, const void *_other)
+static var Real_Imul(var _self, const var _other)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -373,7 +373,7 @@ static void *Real_Imul(void *_self, const void *_other)
 	return self;
 }
 
-static void *Real_Ifloordiv(void *_self, const void *_other)
+static var Real_Ifloordiv(var _self, const var _other)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -381,7 +381,7 @@ static void *Real_Ifloordiv(void *_self, const void *_other)
 	return self;
 }
 
-static void *Real_Idiv(void *_self, const void *_other)
+static var Real_Idiv(var _self, const var _other)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -389,7 +389,7 @@ static void *Real_Idiv(void *_self, const void *_other)
 	return self;
 }
 
-static void *Real_Imod(void *_self, const void *_other)
+static var Real_Imod(var _self, const var _other)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -397,7 +397,7 @@ static void *Real_Imod(void *_self, const void *_other)
 	return self;
 }
 
-static void *Real_Ipow(void *_self, const void *_other)
+static var Real_Ipow(var _self, const var _other)
 {
 	struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -409,14 +409,14 @@ static void *Real_Ipow(void *_self, const void *_other)
  * Representation
  **********************************************************/
 
-static size_t Real_Hash(const void *_self)
+static size_t Real_Hash(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return fnv1a(&self->value, sizeof(self->value));
 }
 
-static char *Real_Str(const void *_self)
+static char *Real_Str(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -426,7 +426,7 @@ static char *Real_Str(const void *_self)
 	return text;
 }
 
-static char *Real_Repr(const void *_self)
+static char *Real_Repr(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
@@ -434,28 +434,28 @@ static char *Real_Repr(const void *_self)
 	strcatf(&text, "'<%s object at 0x%x>'", Classof(self)->name, (size_t)self);
 }
 
-static ssize_t Real_Int(const void *_self)
+static ssize_t Real_Int(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return (ssize_t)self->value;
 }
 
-static size_t Real_Uint(const void *_self)
+static size_t Real_Uint(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return (size_t)self->value;
 }
 
-static double Real_Float(const void *_self)
+static double Real_Float(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	return (double)self->value;
 }
 
-static bool Real_Bool(const void *_self)
+static bool Real_Bool(const var _self)
 {
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
