@@ -174,7 +174,7 @@ static var Vector_Del(var _self)
 	assert(self->class == Vector.Class);
 
 	for (size_t i = 0; i < self->cap; i++) {
-		if (self->buf[i]) {
+		if (self->buf[i] != NULL) {
 			Del(self->buf[i]);
 			self->buf[i] = NULL;
 		}
@@ -404,6 +404,9 @@ static void NamespaceVector_Reserve(var _self, size_t cap)
 	assert(tmp);
 	self->buf = tmp;
 	self->cap = cap;
+	for (i = self->size; i < self->cap; i++) {
+		self->buf[i] = NULL;
+	}
 }
 
 static void NamespaceVector_Shrink_to_fit(var _self)

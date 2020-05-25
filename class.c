@@ -623,17 +623,19 @@ void Println(const char *_fmt, ...)
 	char *value;
 
 	va_start(ap, _fmt);
+	
 	for (i = 0; _fmt[i] != '\0'; i++) {
 		if (_fmt[i] == '{' && _fmt[i + 1] == '}') {
 			object = va_arg(ap, var);
 			value = Str(object);
-			printf("%s", value);
+			fputs(value, stdout);
 			free(value);
 			i++;
 		}
 		else {
-			printf("%c", _fmt[i]);
+			putc(_fmt[i], stdout);
 		}
+		fflush(stdout);
 	}
 	va_end(ap);
 	printf("\n");

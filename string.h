@@ -18,8 +18,8 @@ struct NamespaceString {
 	void      (* Catf)      (var _self, const char *fmt, ...);
 	void      (* Replace)   (var _self, const char *old, const char *new);
 	var       (* Fread)     (const char *path);
-	void      (* Fwrite)    (const char *path);
-	void      (* Fappend)   (const char *path);
+	void      (* Fwrite)    (var _self, const char *path);
+	void      (* Fappend)   (var _self, const char *path);
 	void      (* Fclear)    (const char *path);
 };
 

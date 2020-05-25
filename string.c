@@ -53,8 +53,8 @@ static char*         NamespaceString_Cstr       (const var _self);
 static void          NamespaceString_Catf       (var _self, const char *fmt, ...);
 static void          NamespaceString_Replace    (var _self, const char *old, const char *new);
 static var           NamespaceString_Fread      (const char *path);
-static void          NamespaceString_Fwrite     (const char *path);
-static void          NamespaceString_Fappend    (const char *path);
+static void          NamespaceString_Fwrite     (var _self, const char *path);
+static void          NamespaceString_Fappend    (var _self, const char *path);
 static void          NamespaceString_Fclear     (const char *path);
 
 /**********************************************************
@@ -251,7 +251,7 @@ static var String_Iadd(var _self, const var _other)
 	self->text = tmp;
 	strncat(self->text, other->text, count);
 	self->text[count] = '\0';
-	return (var )self;
+	return (var)self;
 }
 
 /**********************************************************
@@ -279,7 +279,9 @@ static char *String_Str(const var _self)
 	}
 	else {
 		len = strlen(self->text);
-		strcatf(&text, "'%s'", self->text);
+		text = calloc(len + 3, sizeof(char));
+		assert(text);
+		sprintf(text, "'%s'", self->text);
 	}
 
 	return text;
@@ -436,20 +438,20 @@ static var NamespaceString_Fread(const char *path)
 	return self;
 }
 
-static void NamespaceString_Fwrite(const char *path)
+static void NamespaceString_Fwrite(var _self, const char *path)
 {
-	var _self = New(String.Class, "");
 	struct String *self = _self;
+	assert(self->class == String.Class);
 	FILE *f = fopen(path, "w");
 	assert(f);
 	fputs(self->text, f);
 	fclose(f);
 }
 
-static void NamespaceString_Fappend(const char *path)
+static void NamespaceString_Fappend(var _self, const char *path)
 {
-	var _self = New(String.Class, "");
 	struct String *self = _self;
+	assert(self->class == String.Class);
 	FILE *f = fopen(path, "a");
 	assert(f);
 	fputs(self->text, f);

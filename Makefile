@@ -1,6 +1,6 @@
 TARGET=test
 CC=gcc
-CFLAGS=-pipe -march=native -O2 -lm
+CFLAGS=-pipe -march=native -O2 -lm -ggdb
 OBJS=\
 	boolean.o \
 	class.o \

@@ -38,7 +38,7 @@ int strcatf(char **buffer, const char *format, ...)
  */
 int strcatf_va(char **buffer, const char *format, va_list *ap, va_list *copy)
 {
-	char buf[350];
+	char buf[350] = { 0 };
 	long long int buffer_size;
 	size_t format_size = strlen(format);
 	long long int bytes;
@@ -256,6 +256,24 @@ int streplace(char **s, const char *old, const char *new)
 
 	return 1;
 }
+
+#ifndef strndup
+char *strndup(const char *str, size_t n)
+{
+	size_t i;
+	size_t size = strlen(str);
+	size = size > n ? n : size;
+	char *buf = calloc(size + 1, sizeof(char));
+	if (!buf) {
+		return NULL;
+	}
+	for (i = 0; i < size; i++) {
+		buf[i] = str[i];
+	}
+	buf[size] = '\0';
+	return buf;
+}
+#endif
 
 char **strsplit(char *s, const char *fmt)
 {
