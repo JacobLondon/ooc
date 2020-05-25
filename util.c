@@ -10,6 +10,19 @@
 
 #include "util.h"
 
+int strcatf(char **buffer, const char *format, ...)
+{
+	int ret;
+	va_list ap;
+	va_list copy;
+	va_start(ap, format);
+	va_copy(copy, ap);
+	ret = strcatf_va(buffer, format, &ap, &copy);	
+	va_end(ap);
+	va_end(copy);
+	return ret;
+}
+
 /**
  * Only works with the following formats:
  * 
@@ -23,12 +36,11 @@
  * Sizing, time, colors, etc... are NOT supported
  * 
  */
-int strcatf(char **buffer, const char *format, ...)
+int strcatf_va(char **buffer, const char *format, va_list *ap, va_list *copy)
 {
 	char buf[350];
 	long long int buffer_size;
 	size_t format_size = strlen(format);
-	va_list ap;
 	long long int bytes;
 	char *p, *tmp;
 
@@ -54,7 +66,6 @@ int strcatf(char **buffer, const char *format, ...)
 		buffer_size = 0;
 	}
 
-	va_start(ap, format);
 	for (p = (char *)format, bytes = buffer_size + format_size; p != format + format_size; ++p) {
 		if (*p != '%') continue;
 		if (++p == format + format_size) break;
@@ -86,7 +97,7 @@ int strcatf(char **buffer, const char *format, ...)
 		}
 
 		#define X_FORMAT(Fmt, Type) \
-			snprintf(buf, sizeof(buf), (Fmt), va_arg(ap, Type)); \
+			snprintf(buf, sizeof(buf), (Fmt), va_arg(*ap, Type)); \
 			bytes -= (sizeof(Fmt) - 1); break
 		
 		switch (*p) {
@@ -178,7 +189,6 @@ int strcatf(char **buffer, const char *format, ...)
 		bytes += strlen(buf);
 	}
 done:
-	va_end(ap);
 	bytes++; /* NUL term */
 
 	if (*buffer != NULL) {
@@ -191,11 +201,121 @@ done:
 		tmp = calloc(bytes + 1, sizeof(char));
 		*buffer = tmp;
 	}
-	va_start(ap, format);
-	vsnprintf(&tmp[buffer_size], bytes - buffer_size, format, ap);
-	va_end(ap);
+	vsnprintf(&tmp[buffer_size], bytes - buffer_size, format, *copy);
 	return 1;
 	#undef X_FORMAT
+}
+
+int streplace(char **s, const char *old, const char *new)
+{
+	char *result;
+	char *sub;
+	char *p;
+	size_t len;
+	size_t old_len;
+	size_t new_len;
+
+	if (s == NULL || *s == NULL || old == NULL || new == NULL) {
+		return 0;
+	}
+
+	p = *s;
+	len = strlen(*s);
+	old_len = strlen(old);
+	new_len = strlen(new);
+
+	/* no replacements found */
+	if ((sub = strstr(p, old)) == NULL) {
+		return 0;
+	}
+
+	/* at least one replacement found */
+	do {
+		len = len - old_len + new_len;
+		p = (char *)((size_t)sub + old_len);
+	} while ((sub = strstr(p, old)));
+	
+	result = calloc(len + 1, sizeof(char));
+	if (!result) {
+		return 0;
+	}
+	
+	/* re-add the bytes back into the result */
+	for (p = *s; *p != '\0'; p++) {
+		if (p == strstr(p, old)) {
+			strcat(result, new);
+			p += old_len - 1;
+		}
+		else {
+			strncat(result, p, 1);
+		}
+	}
+
+	free(*s);
+	*s = result;
+
+	return 1;
+}
+
+char **strsplit(char *s, const char *fmt)
+{
+	if (!s || !fmt) {
+		return NULL;
+	}
+
+	size_t word_count = 0;
+	size_t size = strlen(s);
+	char **buf;
+	char *tmp;
+	size_t i, j;
+
+	/* count words */
+	for (i = 0; i < size - 1; i++) {
+		/* skip any invalid characters */
+		if (strchr(fmt, s[i])) {
+			continue;
+		}
+
+		/* word was found, traverse passed it */
+		for (; !strchr(fmt, s[i]) && s[i]; i++)
+			;
+		word_count++;
+	}
+
+	/* hold each string and NULL terminate */
+	buf = calloc(word_count + 1, sizeof(char *));
+	if (!buf) {
+		return NULL;
+	}
+
+	/* dup each string */
+	for (i = 0, j = 0; i < word_count; i++) {
+		/* probe forward for length */
+		for (; j < size; j++) {
+			if (strchr(fmt, s[j])) {
+				continue;
+			}
+			
+			/* word was found, traverse passed it */
+			for (tmp = &s[j]; !strchr(fmt, s[j]) && s[j]; j++)
+				;
+
+			/* buf[i] might be NULL, no guarantees */
+			buf[i] = strndup(tmp, (size_t)(&s[j] - tmp));
+			break;
+		}
+	}
+	return buf;
+}
+
+void strsplit_free(char **buf)
+{
+	size_t i = 0;
+	for (; buf[i]; i++) {
+		free(buf[i]);
+		buf[i] = NULL;
+	}
+	free(buf);
 }
 
 size_t fnv1a(const void *buf, size_t size)

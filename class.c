@@ -3,6 +3,7 @@
 
 #include "class.h"
 #include "string.h"
+#include "util.h"
 
 /**********************************************************
  * Class-Neutral Introspection
@@ -548,6 +549,14 @@ void Delitem(var _self, const var _key)
 	(*self)->Delitem(_self, _key);
 }
 
+shared Next(var _self)
+{
+	struct Class **self = _self;
+	assert(_self && *self);
+	assert((*self)->Next);
+	return (*self)->Next(_self);
+}
+
 var Iter(const var _self)
 {
 	const struct Class *const *self = _self;
@@ -572,7 +581,40 @@ bool Contains(const var _self, const var _other)
 	return (*self)->Contains(_self, _other);
 }
 
-void println(const char *_fmt, ...)
+char *Format(const char *_fmt, ...)
+{
+	char *ret;
+	va_list ap;
+	va_start(ap, _fmt);
+	ret = Format_va(_fmt, &ap);	
+	va_end(ap);
+	return ret;
+}
+
+char *Format_va(const char *_fmt, va_list *ap)
+{
+	assert(_fmt);
+	size_t i;
+	var object;
+	char *value;
+	char *ret = NULL;
+
+	for (i = 0; _fmt[i] != '\0'; i++) {
+		if (_fmt[i] == '{' && _fmt[i + 1] == '}') {
+			object = va_arg(*ap, var);
+			value = Str(object);
+			strcatf(&ret, "%s", value);
+			free(value);
+			i++;
+		}
+		else {
+			strcatf(&ret, "%c", _fmt[i]);
+		}
+	}
+	return ret;
+}
+
+void Println(const char *_fmt, ...)
 {
 	assert(_fmt);
 	size_t i;

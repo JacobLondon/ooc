@@ -41,6 +41,7 @@ static size_t        Dict_Len           (const var _self);
 static shared        Dict_Getitem       (const var _self, const var _key);
 static void          Dict_Setitem       (var _self, const var _key, const var _value);
 static void          Dict_Delitem       (var _self, const var _key);
+static shared        Dict_Next          (var _self);
 static bool          Dict_Contains      (const var _self, const var _other);
 
 /**********************************************************
@@ -49,6 +50,8 @@ static bool          Dict_Contains      (const var _self, const var _other);
 
 static var           NamespaceDict_Reserve  (var _self, size_t mod);
 static size_t        NamespaceDict_Hash     (const var _self, const var _key);
+static void          NamespaceDict_Take     (var _self, var _key, var _value);
+static void          NamespaceDict_Initializer(var _self, ...);
 
 /**********************************************************
  * Definitions
@@ -126,6 +129,7 @@ static const struct Class class = {
 	.Getitem   = Dict_Getitem,
 	.Setitem   = Dict_Setitem,
 	.Delitem   = Dict_Delitem,
+	.Next      = Dict_Next,
 	.Iter      = NULL,
 	.Reversed  = NULL,
 	.Contains  = Dict_Contains,
@@ -137,6 +141,8 @@ struct NamespaceDict Dict = {
 	.Reserve       = NamespaceDict_Reserve,
 	.Shrink_to_fit = NULL,
 	.Hash          = NamespaceDict_Hash,
+	.Take          = NamespaceDict_Take,
+	.Initializer   = NamespaceDict_Initializer,
 };
 
 /**********************************************************
@@ -335,6 +341,9 @@ static void Dict_Setitem(var _self, const var _key, const var _value)
 		Del(self->keys[index]);
 		Del(self->values[index]);
 	}
+	if (self->size + 1 == (size_t)(self->cap * DICT_FULL_RATIO)) {
+		NamespaceDict_Reserve(_self, DICT_DEFAULT_SCALING);
+	}
 	self->values[index] = Copy(_value);
 	self->keys[index] = Copy(_key);
 	self->size++;
@@ -350,6 +359,34 @@ static void Dict_Delitem(var _self, const var _key)
 		Del(self->keys[index]);
 		self->size--;
 	}
+}
+
+static shared Dict_Next(var _self)
+{
+	struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	static size_t index = 0;
+	static pair ret;
+	if (self->size == 0 || index == self->size) {
+		index = 0;
+		ret = (pair){ NULL, NULL };
+		return NULL;
+	}
+
+	for (; index < self->cap; index++) {
+		if (self->keys[index] != NULL) {
+			ret = (pair){
+				self->keys[index],
+				self->values[index],
+			};
+			index++;
+			return &ret;
+		}
+	}
+
+	index = 0;
+	ret = (pair){ NULL, NULL };
+	return NULL;
 }
 
 static bool Dict_Contains(const var _self, const var _other)
@@ -417,4 +454,43 @@ static var NamespaceDict_Reserve(var _self, size_t mod)
 	free(oldkeys);
 
 	return self;
+}
+
+static void NamespaceDict_Take(var _self, var _key, var _value)
+{
+	struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	size_t index = Dict.Hash(self, _key);
+	if (self->keys[index] != NULL) {
+		Del(self->keys[index]);
+		Del(self->values[index]);
+	}
+	if (self->size + 1 == (size_t)(self->cap * DICT_FULL_RATIO)) {
+		NamespaceDict_Reserve(_self, DICT_DEFAULT_SCALING);
+	}
+	self->values[index] = _value;
+	self->keys[index] = _key;
+	self->size++;
+}
+
+static void NamespaceDict_Initializer(var _self, ...)
+{
+	struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	va_list ap;
+	var key = NULL;
+	var value = NULL;
+
+	va_start(ap, _self);
+
+	for (;;) {
+		key = va_arg(ap, var);
+		value = va_arg(ap, var);
+		if (key == NULL || value == NULL) {
+			break;
+		}
+		NamespaceDict_Take(_self, key, value);
+	}
+
+	va_end(ap);
 }

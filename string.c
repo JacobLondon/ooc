@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
 #include <float.h>
@@ -51,6 +50,12 @@ static bool          String_Contains      (const var _self, const var _other);
 static ptrdiff_t     NamespaceString_Find       (const var _self, const char *substr);
 static var           NamespaceString_Substring  (const var _self, size_t start, size_t length);
 static char*         NamespaceString_Cstr       (const var _self);
+static void          NamespaceString_Catf       (var _self, const char *fmt, ...);
+static void          NamespaceString_Replace    (var _self, const char *old, const char *new);
+static var           NamespaceString_Fread      (const char *path);
+static void          NamespaceString_Fwrite     (const char *path);
+static void          NamespaceString_Fappend    (const char *path);
+static void          NamespaceString_Fclear     (const char *path);
 
 /**********************************************************
  * Definitions
@@ -128,6 +133,7 @@ static const struct Class class = {
 	.Getitem   = NULL,
 	.Setitem   = NULL,
 	.Delitem   = NULL,
+	.Next      = NULL,
 	.Iter      = NULL,
 	.Reversed  = NULL,
 	.Contains  = String_Contains,
@@ -138,6 +144,12 @@ struct NamespaceString String = {
 	.Cstr      = NamespaceString_Cstr,
 	.Find      = NamespaceString_Find,
 	.Substring = NamespaceString_Substring,
+	.Catf      = NamespaceString_Catf,
+	.Replace   = NamespaceString_Replace,
+	.Fread     = NamespaceString_Fread,
+	.Fwrite    = NamespaceString_Fwrite,
+	.Fappend   = NamespaceString_Fappend,
+	.Fclear    = NamespaceString_Fclear,
 };
 
 /**********************************************************
@@ -262,17 +274,12 @@ static char *String_Str(const var _self)
 	size_t len;
 	char *text = NULL;
 	if (self->text == NULL) {
-		text = strdup("\"\"");
+		text = strdup("''");
 		assert(text);
 	}
 	else {
 		len = strlen(self->text);
-		text = calloc(len + 2, sizeof(char));
-		assert(text);
-		text[0] = '"';
-		sprintf(&text[1], "%s", self->text);
-		text[len + 1] = '"';
-		text[len + 2] = '\0';
+		strcatf(&text, "'%s'", self->text);
 	}
 
 	return text;
@@ -384,4 +391,75 @@ static var NamespaceString_Substring(const var _self, size_t start, size_t lengt
 	var new = New(String.Class, text);
 	free(text);
 	return new;
+}
+
+static void NamespaceString_Catf(var _self, const char *fmt, ...)
+{
+	struct String *self = _self;
+	assert(self->class == String.Class);
+
+	va_list ap;
+	va_start(ap, fmt);
+	char *tmp = Format_va(fmt, &ap);
+	va_end(ap);
+
+	strcatf(&self->text, "%s", tmp);
+	free(tmp);
+}
+
+static void NamespaceString_Replace(var _self, const char *old, const char *new)
+{
+	struct String *self = _self;
+	assert(self->class == String.Class);
+	streplace(&self->text, old, new);
+}
+
+static var NamespaceString_Fread(const char *path)
+{
+	var _self = New(String.Class, "");
+	struct String *self = _self;
+	long len;
+	char *buf;
+	size_t bytes;
+	FILE *f = fopen(path, "r");
+	assert(f);
+
+	fseek(f, 0, SEEK_END);
+	len = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	free(self->text);
+	self->text = calloc(len + 1, sizeof(char));
+	assert(self->text);
+	bytes = fread(self->text, 1, len, f);
+	self->text[bytes] = '\0';
+	fclose(f);
+	return self;
+}
+
+static void NamespaceString_Fwrite(const char *path)
+{
+	var _self = New(String.Class, "");
+	struct String *self = _self;
+	FILE *f = fopen(path, "w");
+	assert(f);
+	fputs(self->text, f);
+	fclose(f);
+}
+
+static void NamespaceString_Fappend(const char *path)
+{
+	var _self = New(String.Class, "");
+	struct String *self = _self;
+	FILE *f = fopen(path, "a");
+	assert(f);
+	fputs(self->text, f);
+	fclose(f);
+}
+
+static void NamespaceString_Fclear(const char *path)
+{
+	FILE *f = fopen(path, "w");
+	assert(f);
+	fputs("", f);
+	fclose(f);
 }

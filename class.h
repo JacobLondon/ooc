@@ -10,6 +10,10 @@
 
 typedef void *var;
 typedef void *shared;
+typedef struct pair {
+	var key;
+	var value;
+} pair;
 
 struct Class {
 	size_t size;
@@ -83,6 +87,7 @@ struct Class {
 	shared   (* Getitem)   (const var _self, const var _key);
 	void     (* Setitem)   (var _self, const var _key, const var _value);
 	void     (* Delitem)   (var _self, const var _key);
+	shared   (* Next)      (var _self);
 	var      (* Iter)      (const var _self);
 	var      (* Reversed)  (const var _self);
 	bool     (* Contains)  (const var _self, const var _other);
@@ -162,6 +167,7 @@ size_t        Len           (const var _self);
 shared        Getitem       (const var _self, const var _key);
 void          Setitem       (var _self, const var _key, const var _value);
 void          Delitem       (var _self, const var _key);
+shared        Next          (var _self);
 var           Iter          (const var _self);
 var           Reversed      (const var _self);
 bool          Contains      (const var _self, const var _other);
@@ -251,6 +257,8 @@ static const struct Class class = {
 
 #define Classof(Object) ((struct Class *)Object)
 
-void println(const char *_fmt, ...);
+char *Format(const char *_fmt, ...);
+char *Format_va(const char *_fmt, va_list *ap);
+void Println(const char *_fmt, ...);
 
 #endif /* OOC_CLASS_H */

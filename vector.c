@@ -1,10 +1,10 @@
 #include <assert.h>
-#include <stdarg.h>
 #include <string.h>
 #include <stdint.h>
 
 #include "util.h"
 #include "class.h"
+#include "string.h"
 #include "vector.h"
 
 #define VECTOR_DEFAULT_CAP 8
@@ -37,6 +37,7 @@ static size_t        Vector_Len           (const var _self);
 static shared        Vector_Getitem       (const var _self, const var _key);
 static void          Vector_Setitem       (var _self, const var _key, const var _value);
 static void          Vector_Delitem       (var _self, const var _key);
+static shared        Vector_Next          (var _self);
 static bool          Vector_Contains      (const var _self, const var _other);
 
 /**********************************************************
@@ -50,6 +51,9 @@ static void          NamespaceVector_Push_back    (var _self, var _value);
 static void          NamespaceVector_Pop_back     (var _self);
 static size_t        NamespaceVector_Find         (const var _self, const var _value);
 static void          NamespaceVector_Emplace_back (var _self, const void *_class, ...);
+static void          NamespaceVector_Take_back    (var _self, var _value);
+static void          NamespaceVector_Initializer  (var _self, ...);
+static var           NamespaceVector_Strsplit     (var _string, const char *fmt);
 
 /**********************************************************
  * Definitions
@@ -127,6 +131,7 @@ static const struct Class class = {
 	.Getitem   = Vector_Getitem,
 	.Setitem   = Vector_Setitem,
 	.Delitem   = Vector_Delitem,
+	.Next      = Vector_Next,
 	.Iter      = NULL,
 	.Reversed  = NULL,
 	.Contains  = Vector_Contains,
@@ -140,6 +145,9 @@ struct NamespaceVector Vector = {
 	.Pop_back      = NamespaceVector_Pop_back,
 	.Find          = NamespaceVector_Find,
 	.Emplace_back  = NamespaceVector_Emplace_back,
+	.Take_back     = NamespaceVector_Take_back,
+	.Initializer   = NamespaceVector_Initializer,
+	.Strsplit      = NamespaceVector_Strsplit,
 };
 
 /**********************************************************
@@ -324,6 +332,25 @@ static void Vector_Delitem(var _self, const var _key)
 	self->size--;
 }
 
+static shared Vector_Next(var _self)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+	static size_t index = 0;
+
+	if (self->size == 0 || index == self->size) {
+		index = 0;
+		return NULL;
+	}
+
+	for (; index < self->size;) {
+		return self->buf[index++];
+	}
+
+	index = 0;
+	return NULL;
+}
+
 static bool Vector_Contains(const var _self, const var _other)
 {
 	const struct Vector *self = _self;
@@ -437,4 +464,53 @@ static void NamespaceVector_Emplace_back(var _self, const void *_class, ...)
 	ret = Vnew(_class, &ap);
 	self->buf[self->size++] = ret;
 	va_end(ap);
+}
+
+static void NamespaceVector_Take_back(var _self, var _value)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+	if (self->size + 1 >= self->cap) {
+		NamespaceVector_Reserve(self, self->cap * VECTOR_DEFAULT_SCALING);
+	}
+
+	self->buf[self->size++] = _value;
+}
+
+static void NamespaceVector_Initializer(var _self, ...)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+	va_list ap;
+	var p = NULL;
+
+	va_start(ap, _self);
+
+	for (;;) {
+		p = va_arg(ap, var);
+		if (p == NULL) {
+			break;
+		}
+		NamespaceVector_Take_back(_self, p);
+	}
+
+	va_end(ap);
+}
+
+static var NamespaceVector_Strsplit(var _string, const char *fmt)
+{
+	var _self = New(Vector.Class);
+	struct Vector *self = _self;
+	struct String *string = _string;
+	assert(string->class == String.Class);
+	char **buf = strsplit(string->text, fmt);
+	size_t i;
+
+	for (i = 0; buf[i]; i++) {
+		NamespaceVector_Emplace_back(self, String.Class, buf[i]);
+		free(buf[i]);
+		buf[i] = NULL;
+	}
+	free(buf);
+	return self;
 }

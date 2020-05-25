@@ -2,6 +2,7 @@
 #define OOC_VECTOR_H
 
 #include <stddef.h>
+#include <stdarg.h>
 
 struct Vector {
 	const void *class;
@@ -19,6 +20,9 @@ struct NamespaceVector {
 	void     (* Pop_back)     (var _self);
 	size_t   (* Find)         (const var _self, const var _value);
 	void     (* Emplace_back) (var _self, const void *_class, ...);
+	void     (* Take_back)    (var _self, var _value);
+	void     (* Initializer)  (var _self, ...); /* NULL terminated */
+	var      (* Strsplit)     (var _string, const char *fmt);
 };
 
 extern struct NamespaceVector Vector;

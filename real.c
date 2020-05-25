@@ -141,6 +141,7 @@ static const struct Class class = {
 	.Getitem   = NULL,
 	.Setitem   = NULL,
 	.Delitem   = NULL,
+	.Next      = NULL,
 	.Iter      = NULL,
 	.Reversed  = NULL,
 	.Contains  = NULL,
