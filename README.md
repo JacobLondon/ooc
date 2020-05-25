@@ -14,8 +14,8 @@ int main(void)
     Println("{}", line);
   }
   
-  Del(s);
-  Del(v);
+  Del(str);
+  Del(vec);
 
   return 0;
 }
