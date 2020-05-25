@@ -1,7 +1,22 @@
 # Object-Oriented C
 Reading Object-Oriented Programming with ANSI-C
 
-# To Do
-- Make Namespace Class uppercase
-- Make new super class called Container to seperate from Type
-- String add/iadd to namespace
+# Easy Tooling
+```C
+#include <ooc.h>
+
+int main(void)
+{
+  var str = String.Fread("data.txt");
+  var vec = Vector.Strsplit(s, "\n");
+  shared line;
+  while (line = Next(vec)) {
+    Println("{}", line);
+  }
+  
+  Del(s);
+  Del(v);
+
+  return 0;
+}
+```
