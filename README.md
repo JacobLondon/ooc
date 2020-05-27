@@ -18,7 +18,7 @@ int main(void)
 	var vec = Vector.Strsplit(s, "\n");
 	shared line;
 	while (line = Next(vec)) {
-	Println("{}", line);
+		Println("{}", line);
 	}
 	
 	Del(str);
