@@ -209,7 +209,7 @@ static char *Boolean_Repr(const var _self)
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", ((struct Class *)(self))->name, (size_t)self);
+	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
 	return text;
 }
 

@@ -531,7 +531,7 @@ static char *Integer_Repr(const var _self)
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Classof(self)->name, (size_t)self);
+	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
 	assert(text);
 	return text;
 }

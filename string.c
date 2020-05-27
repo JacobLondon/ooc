@@ -162,10 +162,9 @@ static var String_New(var _self, va_list *ap)
 	assert(self->class == String.Class);
 	const char *text = va_arg(*ap, const char *);
 
-	self->text = calloc(strlen(text) + 1, sizeof(char));
+	self->text = strdup(text);
 	assert(self->text);
 
-	strcpy(self->text, text);
 	return self;
 }
 
@@ -292,7 +291,7 @@ static char *String_Repr(const var _self)
 	const struct String *self = _self;
 	assert(self->class == String.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Classof(self)->name, (size_t)self);
+	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
 	assert(text);
 	return text;
 }

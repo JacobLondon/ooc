@@ -2,6 +2,6 @@
 Reading Object-Oriented Programming with ANSI-C
 
 # To Do
-- Make Namespace Class uppercase
-- Make new super class called Container to seperate from Type
-- String add/iadd to namespace
+* Initializer for Vector and Dict should just be in new, the current functions should be renamed
+* Repr print function
+* 

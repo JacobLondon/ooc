@@ -16,10 +16,10 @@ typedef struct pair {
 } pair;
 
 struct Class {
-	size_t size;
 	const struct Class *class;
 	const struct Class *super;
 	const char*  name;
+	size_t size;
 
 	// construction
 	var      (* New)        (var _self, va_list *ap);
@@ -97,6 +97,7 @@ struct Class {
 size_t        Sizeof        (const var _self);
 const void*   Super         (const void *_self);
 const void*   Type          (const var _self);
+const char*   Nameof        (const var _self);
 bool          Isinstance    (const void *_class, const var _other);
 bool          Issubclass    (const var _self, const void *_class);
 
@@ -254,8 +255,6 @@ static const struct Class class = {
 	printf("%s: %s not compatible with %s.\n", __func__, ((struct Class *)Class0)->name, ((struct Class *)Class1)->name); \
 	assert(0); \
 } while (0)
-
-#define Classof(Object) ((struct Class *)Object)
 
 char *Format(const char *_fmt, ...);
 char *Format_va(const char *_fmt, va_list *ap);

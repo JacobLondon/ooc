@@ -93,16 +93,13 @@ int main(void)
 
 	{
 		var s = String.Fread("main.c");
-
-		/* TODO: Strsplit is super broken, fix */
-		/* TODO: Add the lib to this */
-		var v = Vector.Strsplit(s, "\n");
-		Println("{}", s);
-
-		/*shared line;
-		while (line = Next(v)) {
-			Println("{}", line);
-		}*/
+		var v = Vector.Strsplit(s, " \n\r\t");
+		char *rep = Repr(s);
+		printf("%s\n", rep);
+		free(rep);
+		rep = Repr(v);
+		printf("%s\n", rep);
+		free(rep);
 
 		Del(s);
 		Del(v);

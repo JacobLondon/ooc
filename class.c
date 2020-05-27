@@ -32,6 +32,15 @@ const void *Type(const var _self)
 	return self->class;
 }
 
+const char *Nameof(const var _self)
+{
+	const struct Class *self = _self;
+	assert(_self);
+	assert(self->class);
+	assert(self->class->name);
+	return self->class->name;
+}
+
 bool Isinstance(const void *_class, const var _other)
 {
 	return _other && (Type(_other) == _class);

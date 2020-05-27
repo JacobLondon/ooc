@@ -277,7 +277,7 @@ static char *Vector_Repr(const var _self)
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Classof(self)->name, (size_t)self);
+	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
 	assert(text);
 	return text;
 }
@@ -377,6 +377,7 @@ static void NamespaceVector_Clear(var _self)
 	for (i = 0; i < self->size; i++) {
 		if (self->buf[i]) {
 			Del(self->buf[i]);
+			self->buf[i] = NULL;
 		}
 	}
 	self->size = 0;
@@ -394,6 +395,7 @@ static void NamespaceVector_Reserve(var _self, size_t cap)
 		for (i = cap; i < self->size; i++) {
 			if (self->buf[i]) {
 				Del(self->buf[i]);
+				self->buf[i] = NULL;
 			}
 		}
 		self->size = cap;
@@ -404,6 +406,7 @@ static void NamespaceVector_Reserve(var _self, size_t cap)
 	assert(tmp);
 	self->buf = tmp;
 	self->cap = cap;
+
 	for (i = self->size; i < self->cap; i++) {
 		self->buf[i] = NULL;
 	}
@@ -511,9 +514,7 @@ static var NamespaceVector_Strsplit(var _string, const char *fmt)
 
 	for (i = 0; buf[i]; i++) {
 		NamespaceVector_Emplace_back(self, String.Class, buf[i]);
-		free(buf[i]);
-		buf[i] = NULL;
 	}
-	free(buf);
+	strsplit_free(buf);
 	return self;
 }
