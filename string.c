@@ -62,10 +62,10 @@ static void          NamespaceString_Fclear     (const char *path);
  **********************************************************/
 
 static const struct Class class = {
-	.size      = sizeof(struct String),
 	.class     = &class,
 	.super     = NULL,
 	.name      = "String",
+	.size      = sizeof(struct String),
 
 	// construction
 	.New       = String_New,

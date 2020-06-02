@@ -35,10 +35,10 @@ static bool          Boolean_Bool          (const var _self);
  **********************************************************/
 
 static const struct Class class = {
-	.size      = sizeof(struct Boolean),
 	.class     = &class,
 	.super     = NULL,
 	.name      = "Boolean",
+	.size      = sizeof(struct Boolean),
 
 	// construction
 	.New       = Boolean_New,

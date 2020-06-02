@@ -60,10 +60,10 @@ static var           NamespaceVector_Strsplit     (var _string, const char *fmt)
  **********************************************************/
 
 static const struct Class class = {
-	.size      = sizeof(struct Vector),
 	.class     = &class,
 	.super     = NULL,
 	.name      = "Vector",
+	.size      = sizeof(struct Vector),
 
 	// construction
 	.New       = Vector_New,

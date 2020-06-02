@@ -58,10 +58,10 @@ static void          NamespaceDict_Initializer(var _self, ...);
  **********************************************************/
 
 static const struct Class class = {
-	.size      = sizeof(struct Dict),
 	.class     = &class,
 	.super     = NULL,
 	.name      = "Dict",
+	.size      = sizeof(struct Dict),
 
 	// construction
 	.New       = Dict_New,

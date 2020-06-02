@@ -70,10 +70,10 @@ static bool          Real_Bool          (const var _self);
  **********************************************************/
 
 static const struct Class class = {
-	.size      = sizeof(struct Real),
 	.class     = &class,
 	.super     = NULL,
 	.name      = "Real",
+	.size      = sizeof(struct Real),
 
 	// construction
 	.New       = Real_New,

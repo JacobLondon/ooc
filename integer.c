@@ -75,10 +75,10 @@ static bool          Integer_Bool          (const var _self);
  **********************************************************/
 
 static const struct Class class = {
-	.size      = sizeof(struct Integer),
 	.class     = &class,
 	.super     = NULL,
 	.name      = "Integer",
+	.size      = sizeof(struct Integer),
 
 	// construction
 	.New       = Integer_New,
