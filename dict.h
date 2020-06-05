@@ -1,6 +1,8 @@
 #ifndef OOC_DICT_H
 #define OOC_DICT_H
 
+#include "types.h"
+
 struct Dict {
 	const void *class;
 	var *values;

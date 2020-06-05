@@ -1,4 +1,7 @@
-#include "iter.h"
+#include <assert.h>
+#include <memory.h>
+#include "iterator.h"
+#include "util.h"
 #include "class.h"
 
 /**********************************************************
@@ -23,7 +26,7 @@ static char*         Iterator_Str           (const var _self);
 static char*         Iterator_Repr          (const var _self);
 
 // containers
-static shared        Iterator_Next          (var _self);
+static shared        Iterator_Next          (var _self, va_list *ap);
 
 /**********************************************************
  * Namespace Function Prototypes
@@ -37,7 +40,7 @@ static const struct Class class = {
 	.class     = &class,
 	.super     = NULL,
 	.name      = "Iterator",
-	.size      = sizeof(struct Iter),
+	.size      = sizeof(struct Iterator),
 
 	// construction
 	.New       = Iterator_New,
@@ -119,23 +122,42 @@ struct NamespaceIterator Iterator = {
  * Construction
  **********************************************************/
 
+/**
+ * object pointer, state pointer, state size,
+ */
 static var Iterator_New(var _self, va_list *ap)
 {
 	struct Iterator *self = _self;
 	assert(self->class == Iterator.Class);
-	self->object = va_arg(*ap, shared);
+	
+	self->object = va_arg(*ap, void *);
+	void *state = va_arg(*ap, void *);
+	self->size = va_arg(*ap, size_t);
+
+	self->state = calloc(1, self->size);
+	assert(self->state);
+	memcpy(self->state, state, self->size);
 
 	return self;
 }
 
 static var Iterator_Del(var _self)
 {
+	struct Iterator *self = _self;
+	assert(self->class == Iterator.Class);
 
+	free(self->state);
+	return self;
 }
 
 static var Iterator_Copy(const var _self)
 {
+	struct Iterator *self = _self;
+	assert(self->class == Iterator.Class);
 
+	var _new = New(Iterator.Class, self->state, self->size);
+	struct Iterator *new = _new;
+	return new;
 }
 
 /**********************************************************
@@ -160,17 +182,29 @@ static var Iterator_Copy(const var _self)
 
 static char *Iterator_Str(const var _self)
 {
-
+	return Iterator_Repr(_self);
 }
 
 static char *Iterator_Repr(const var _self)
 {
-
+	struct Iterator *self = _self;
+	assert(self->class == Iterator.Class);
+	char *text = NULL;
+	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
+	return text;
 }
 
 /**********************************************************
  * Containers
  **********************************************************/
+
+static shared Iterator_Next(var _self, va_list *ap)
+{
+	// assume no va arg, Iterator does not implement Iter
+	struct Iterator *self = _self;
+	assert(self->class == Iterator.Class);
+	return Next(self->object, self->state);
+}
 
 /**********************************************************
  * Namespace Functions

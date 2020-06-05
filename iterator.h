@@ -1,9 +1,13 @@
 #ifndef OOC_ITERATOR_H
 #define OOC_ITERATOR_H
 
+#include "types.h"
+
 struct Iterator {
 	const void *class;
-	void *object;
+	void *state;
+	size_t size;
+	shared *object;
 };
 
 struct NamespaceIterator {

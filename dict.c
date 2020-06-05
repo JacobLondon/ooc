@@ -5,6 +5,7 @@
 #include "util.h"
 #include "class.h"
 #include "dict.h"
+#include "iterator.h"
 
 #define DICT_DEFAULT_CAP 8
 #define DICT_DEFAULT_SCALING 2
@@ -41,7 +42,8 @@ static size_t        Dict_Len           (const var _self);
 static shared        Dict_Getitem       (const var _self, const var _key);
 static void          Dict_Setitem       (var _self, const var _key, const var _value);
 static void          Dict_Delitem       (var _self, const var _key);
-static shared        Dict_Next          (var _self);
+static shared        Dict_Next          (var _self, va_list *ap);
+static var           Dict_Iter          (const var _self);
 static bool          Dict_Contains      (const var _self, const var _other);
 
 /**********************************************************
@@ -130,7 +132,7 @@ static const struct Class class = {
 	.Setitem   = Dict_Setitem,
 	.Delitem   = Dict_Delitem,
 	.Next      = Dict_Next,
-	.Iter      = NULL,
+	.Iter      = Dict_Iter,
 	.Reversed  = NULL,
 	.Contains  = Dict_Contains,
 };
@@ -143,6 +145,11 @@ struct NamespaceDict Dict = {
 	.Hash          = NamespaceDict_Hash,
 	.Take          = NamespaceDict_Take,
 	.Initializer   = NamespaceDict_Initializer,
+};
+
+struct DictIterator {
+	size_t index;
+	pair keyvalue;
 };
 
 /**********************************************************
@@ -361,32 +368,47 @@ static void Dict_Delitem(var _self, const var _key)
 	}
 }
 
-static shared Dict_Next(var _self)
+static shared Dict_Next(var _self, va_list *ap)
 {
 	struct Dict *self = _self;
 	assert(self->class == Dict.Class);
-	static size_t index = 0;
-	static pair ret;
-	if (self->size == 0 || index == self->size) {
-		index = 0;
-		ret = (pair){ NULL, NULL };
+
+	struct DictIterator *state = va_arg(*ap, void *);
+	assert(state);
+
+	if (self->size == 0 || state->index == self->size) {
+		state->index = 0;
+		state->keyvalue = (pair){ NULL, NULL };
 		return NULL;
 	}
 
-	for (; index < self->cap; index++) {
-		if (self->keys[index] != NULL) {
-			ret = (pair){
-				self->keys[index],
-				self->values[index],
+	for (; state->index < self->cap; state->index++) {
+		if (self->keys[state->index] != NULL) {
+			state->keyvalue = (pair){
+				self->keys[state->index],
+				self->values[state->index],
 			};
-			index++;
-			return &ret;
+			state->index++;
+			return &state->keyvalue;
 		}
 	}
 
-	index = 0;
-	ret = (pair){ NULL, NULL };
+	state->index = 0;
+	state->keyvalue = (pair){ NULL, NULL };
 	return NULL;
+}
+
+static var Dict_Iter(const var _self)
+{
+	const struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	struct DictIterator state = {
+		.index = 0,
+		.keyvalue = (pair){ NULL, NULL },
+	};
+
+	var iterator = New(Iterator.Class, _self, &state, (size_t)sizeof(state));
+	return iterator;
 }
 
 static bool Dict_Contains(const var _self, const var _other)

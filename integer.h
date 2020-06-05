@@ -1,8 +1,7 @@
 #ifndef OOC_INTEGER_H
 #define OOC_INTEGER_H
 
-#include <stddef.h>
-#include <sys/types.h>
+#include "types.h"
 
 struct Integer {
 	const void *class;

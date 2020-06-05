@@ -1,13 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "class.h"
-#include "string.h"
-#include "dict.h"
-#include "integer.h"
-#include "vector.h"
-#include "real.h"
-#include "boolean.h"
+#include "ooc.h"
 
 int main(void)
 {
@@ -33,7 +27,7 @@ int main(void)
 		Del(e);
 	}*/
 
-	{
+	/*{
 		var mydict = New(Dict.Class);
 
 		var a = New(String.Class, "Hello");
@@ -103,7 +97,59 @@ int main(void)
 
 		Del(s);
 		Del(v);
+	}*/
+
+	{
+		var v = New(Vector.Class);
+		Vector.Initializer(v, New(String.Class, "Hello"), New(String.Class, "World"), NULL);
+
+		var i = Iter(v);
+		shared word;
+		while (word = Next(i)) {
+			Println("{}", word);
+		}
+		Del(i);
+		Del(v);
 	}
+
+	{
+		var d = New(Dict.Class);
+		Dict.Initializer(d,
+			New(String.Class, "Yes"), New(Integer.Class, 10),
+			New(String.Class, "No"), New(Integer.Class, 50),
+			NULL, NULL);
+
+		var r = Iter(d);
+		pair *item;
+		while (item = Next(r)) {
+			Println("{}: {}", item->key, item->value);
+		}
+		Del(r);
+		Del(d);
+	}
+
+	{
+		var s = New(String.Class, "12345678");
+		Println("{}", s);
+		var i = Iter(s);
+		char *p;
+		while (p = Next(i)) {
+			printf("%c\n", *p);
+		}
+	}
+
+	{
+		var mylist = New(List.Class);
+		List.Initializer(mylist, New(String.Class, "Hello"), New(String.Class, "World"), NULL);
+		var i = Iter(mylist);
+		shared word;
+		while (word = Next(i)) {
+			Println("{}", word);
+		}
+		Del(mylist);
+		Del(i);
+	}
+	
 
 	return 0;
 }

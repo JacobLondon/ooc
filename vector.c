@@ -5,6 +5,7 @@
 #include "util.h"
 #include "class.h"
 #include "string.h"
+#include "iterator.h"
 #include "vector.h"
 
 #define VECTOR_DEFAULT_CAP 8
@@ -37,7 +38,8 @@ static size_t        Vector_Len           (const var _self);
 static shared        Vector_Getitem       (const var _self, const var _key);
 static void          Vector_Setitem       (var _self, const var _key, const var _value);
 static void          Vector_Delitem       (var _self, const var _key);
-static shared        Vector_Next          (var _self);
+static shared        Vector_Next          (var _self, va_list *ap);
+static var           Vector_Iter          (const var _self);
 static bool          Vector_Contains      (const var _self, const var _other);
 
 /**********************************************************
@@ -132,7 +134,7 @@ static const struct Class class = {
 	.Setitem   = Vector_Setitem,
 	.Delitem   = Vector_Delitem,
 	.Next      = Vector_Next,
-	.Iter      = NULL,
+	.Iter      = Vector_Iter,
 	.Reversed  = NULL,
 	.Contains  = Vector_Contains,
 };
@@ -148,6 +150,10 @@ struct NamespaceVector Vector = {
 	.Take_back     = NamespaceVector_Take_back,
 	.Initializer   = NamespaceVector_Initializer,
 	.Strsplit      = NamespaceVector_Strsplit,
+};
+
+struct VectorIterator {
+	size_t index;
 };
 
 /**********************************************************
@@ -210,6 +216,7 @@ static bool Vector_Eq(const var _self, const var _other)
 {
 	const struct Vector *self = _self;
 	const struct Vector *other = _other;
+	size_t i;
 	assert(self->class == Vector.Class);
 	assert(other->class == Vector.Class);
 
@@ -217,7 +224,7 @@ static bool Vector_Eq(const var _self, const var _other)
 		return false;
 	}
 
-	for (size_t i = 0; i < self->size && i < other->size; i++) {
+	for (i = 0; i < self->size && i < other->size; i++) {
 		if (Ne(self->buf[i], other->buf[i])) {
 			return false;
 		}
@@ -304,7 +311,11 @@ static var Vector_Getitem(const var _self, const var _key)
 {
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
-	return self->buf[Uint(_key)];
+	size_t idx = Uint(_key);
+	if (idx > self->size) {
+		idx = idx % self->size;
+	}
+	return self->buf[idx];
 }
 
 static void Vector_Setitem(var _self, const var _key, const var _value)
@@ -312,6 +323,9 @@ static void Vector_Setitem(var _self, const var _key, const var _value)
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	size_t idx = Uint(_key);
+	if (idx > self->size) {
+		idx = idx % self->size;
+	}
 	if (self->buf[idx] != NULL) {
 		Del(self->buf[idx]);
 	}
@@ -323,6 +337,9 @@ static void Vector_Delitem(var _self, const var _key)
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	size_t idx = Uint(_key);
+	if (idx > self->size) {
+		idx = idx % self->size;
+	}
 	Del(self->buf[idx]);
 
 	// shift buffer
@@ -332,23 +349,35 @@ static void Vector_Delitem(var _self, const var _key)
 	self->size--;
 }
 
-static shared Vector_Next(var _self)
+static shared Vector_Next(var _self, va_list *ap)
 {
 	struct Vector *self = _self;
 	assert(self->class == Vector.Class);
-	static size_t index = 0;
 
-	if (self->size == 0 || index == self->size) {
-		index = 0;
+	struct VectorIterator *state = va_arg(*ap, void *);
+
+	if (self->size == 0 || state->index >= self->size) {
+		state->index = 0;
 		return NULL;
 	}
 
-	for (; index < self->size;) {
-		return self->buf[index++];
+	for (; state->index < self->size;) {
+		return self->buf[state->index++];
 	}
 
-	index = 0;
+	state->index = 0;
 	return NULL;
+}
+
+static var Vector_Iter(const var _self)
+{
+	const struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+	struct VectorIterator state = {
+		.index = 0,
+	};
+	var iterator = New(Iterator.Class, _self, &state, (size_t)sizeof(state));
+	return iterator;
 }
 
 static bool Vector_Contains(const var _self, const var _other)
@@ -460,16 +489,16 @@ static void NamespaceVector_Emplace_back(var _self, const void *_class, ...)
 {
 	struct Vector *self = _self;
 	va_list ap;
-	var ret;
+	var new;
 	assert(self->class == Vector.Class);
 
 	if (self->size + 1 >= self->cap) {
 		NamespaceVector_Reserve(self, self->cap * VECTOR_DEFAULT_SCALING);
 	}
 	va_start(ap, _class);
-	ret = Vnew(_class, &ap);
-	self->buf[self->size++] = ret;
+	new = Vnew(_class, &ap);
 	va_end(ap);
+	self->buf[self->size++] = new;
 }
 
 static void NamespaceVector_Take_back(var _self, var _value)

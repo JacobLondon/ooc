@@ -7,13 +7,8 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <sys/types.h>
+#include "types.h"
 
-typedef void *var;
-typedef void *shared;
-typedef struct pair {
-	var key;
-	var value;
-} pair;
 
 struct Class {
 	const struct Class *class;
@@ -87,7 +82,7 @@ struct Class {
 	shared   (* Getitem)    (const var _self, const var _key);
 	void     (* Setitem)    (var _self, const var _key, const var _value);
 	void     (* Delitem)    (var _self, const var _key);
-	shared   (* Next)       (var _self);
+	shared   (* Next)       (var _self, va_list *ap);
 	var      (* Iter)       (const var _self);
 	var      (* Reversed)   (const var _self);
 	bool     (* Contains)   (const var _self, const var _other);
@@ -168,7 +163,7 @@ size_t        Len           (const var _self);
 shared        Getitem       (const var _self, const var _key);
 void          Setitem       (var _self, const var _key, const var _value);
 void          Delitem       (var _self, const var _key);
-shared        Next          (var _self);
+shared        Next          (var _self, ...);
 var           Iter          (const var _self);
 var           Reversed      (const var _self);
 bool          Contains      (const var _self, const var _other);

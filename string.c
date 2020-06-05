@@ -6,6 +6,7 @@
 
 #include "class.h"
 #include "string.h"
+#include "iterator.h"
 #include "util.h"
 
 /**********************************************************
@@ -41,6 +42,8 @@ static bool          String_Bool          (const var _self);
 
 // containers
 static size_t        String_Len           (const var _self);
+static shared        String_Next          (var _self, va_list *ap);
+static var           String_Iter          (const var _self);
 static bool          String_Contains      (const var _self, const var _other);
 
 /**********************************************************
@@ -133,8 +136,8 @@ static const struct Class class = {
 	.Getitem   = NULL,
 	.Setitem   = NULL,
 	.Delitem   = NULL,
-	.Next      = NULL,
-	.Iter      = NULL,
+	.Next      = String_Next,
+	.Iter      = String_Iter,
 	.Reversed  = NULL,
 	.Contains  = String_Contains,
 };
@@ -152,6 +155,10 @@ struct NamespaceString String = {
 	.Fclear    = NamespaceString_Fclear,
 };
 
+struct StringIterator {
+	size_t index;
+};
+
 /**********************************************************
  * Construction
  **********************************************************/
@@ -164,6 +171,7 @@ static var String_New(var _self, va_list *ap)
 
 	self->text = strdup(text);
 	assert(self->text);
+	self->size = strlen(self->text);
 
 	return self;
 }
@@ -172,8 +180,9 @@ static var String_Del(var _self)
 {
 	struct String *self = _self;
 	assert(self->class == String.Class);
-	memset(self->text, 0, strlen(self->text));
+	memset(self->text, 0, self->size);
 	free(self->text);
+	self->size = 0;
 	self->text = NULL;
 	return self;
 }
@@ -223,7 +232,7 @@ static var String_Add(const var _self, const var _other)
 	assert(self->class == String.Class);
 	assert(other->class == String.Class);
 
-	size_t count = strlen(self->text) + strlen(other->text) + 1;
+	size_t count = self->size + other->size + 1;
 	char *text = calloc(count, sizeof(char));
 	assert(text);
 	strcat(text, self->text);
@@ -244,12 +253,13 @@ static var String_Iadd(var _self, const var _other)
 	assert(self->class == String.Class);
 	assert(other->class == String.Class);
 
-	size_t count = strlen(self->text) + strlen(other->text);
+	size_t count = self->size + other->size;
 	char *tmp = realloc(self->text, count + 1);
 	assert(tmp);
 	self->text = tmp;
 	strncat(self->text, other->text, count);
 	self->text[count] = '\0';
+	self->size = count;
 	return (var)self;
 }
 
@@ -263,22 +273,21 @@ static size_t String_Hash(const var _self)
 	assert(self->class == String.Class);
 	char *p = self->text;
 
-	return fnv1a(p, strlen(p));
+	return fnv1a(p, self->size);
 }
 
 static char *String_Str(const var _self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
-	size_t len;
+	
 	char *text = NULL;
 	if (self->text == NULL) {
 		text = strdup("''");
 		assert(text);
 	}
 	else {
-		len = strlen(self->text);
-		text = calloc(len + 3, sizeof(char));
+		text = calloc(self->size + 3, sizeof(char));
 		assert(text);
 		sprintf(text, "'%s'", self->text);
 	}
@@ -333,7 +342,7 @@ static bool String_Bool(const var _self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
-	if (strlen(self->text) > 0) {
+	if (self->size > 0) {
 		return true;
 	}
 	return false;
@@ -347,7 +356,38 @@ static size_t String_Len(const var _self)
 {
 	const struct String *self = _self;
 	assert(self->class == String.Class);
-	return strlen(self->text);
+	return self->size;
+}
+
+static shared String_Next(var _self, va_list *ap)
+{
+	struct String *self = _self;
+	assert(self->class == String.Class);
+
+	struct StringIterator *state = va_arg(*ap, void *);
+
+	if (self->size == 0 || state->index >= self->size) {
+		state->index = 0;
+		return NULL;
+	}
+
+	for (; state->index < self->size;) {
+		return &self->text[state->index++];
+	}
+
+	state->index = 0;
+	return NULL;
+}
+
+static var String_Iter(const var _self)
+{
+	const struct String *self = _self;
+	assert(self->class == String.Class);
+	struct StringIterator state = {
+		.index = 0,
+	};
+	var iterator = New(Iterator.Class, _self, &state, (size_t)sizeof(state));
+	return iterator;
 }
 
 static bool String_Contains(const var _self, const var _other)

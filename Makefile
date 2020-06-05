@@ -6,6 +6,8 @@ OBJS=\
 	class.o \
 	dict.o \
 	integer.o \
+	iterator.o \
+	list.o \
 	main.o \
 	real.o \
 	string.o \

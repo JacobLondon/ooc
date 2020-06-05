@@ -1,11 +1,12 @@
 #ifndef OOC_STRING_H
 #define OOC_STRING_H
 
-#include <stddef.h>
+#include "types.h"
 
 struct String {
 	const void *class;
 	char *text;
+	size_t size;
 };
 
 struct NamespaceString {

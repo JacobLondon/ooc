@@ -558,12 +558,17 @@ void Delitem(var _self, const var _key)
 	(*self)->Delitem(_self, _key);
 }
 
-shared Next(var _self)
+shared Next(var _self, ...)
 {
 	struct Class **self = _self;
+	va_list ap;
+	shared tmp;
 	assert(_self && *self);
 	assert((*self)->Next);
-	return (*self)->Next(_self);
+	va_start(ap, _self);
+	tmp = (*self)->Next(_self, &ap);
+	va_end(ap);
+	return tmp;
 }
 
 var Iter(const var _self)
