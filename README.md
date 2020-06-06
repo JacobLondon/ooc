@@ -3,10 +3,7 @@ Reading Object-Oriented Programming with ANSI-C
 
 
 # To Do
-* Initializer for Vector and Dict should just be in new, the current functions should be renamed
 * Repr print function
-* Next for Strings (actual iterator stuff)
-* 
 
 # Example 1
 ```C
@@ -49,10 +46,12 @@ int main(void)
 	while (item = Next(it)) {
 		Println("{}:", item->key);
 		var lines = Vector.Strsplit(item->value, "\n\r");
+		var line_it = Iter(lines);
 		shared line;
-		while (line = Next(lines)) {
+		while (line = Next(line_it)) {
 			Println("{}", line);
 		}
+		Del(line_it);
 		Del(lines);
 	}
 	
