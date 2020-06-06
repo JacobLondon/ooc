@@ -14,4 +14,6 @@ struct NamespaceInteger {
 
 extern struct NamespaceInteger Integer;
 
+#define $Int(value) New(Integer.Class, value)
+
 #endif /* OOC_INTEGER_H */

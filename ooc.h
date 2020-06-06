@@ -5,6 +5,7 @@
 #include "string.h"
 #include "dict.h"
 #include "integer.h"
+#include "iterator.h"
 #include "vector.h"
 #include "real.h"
 #include "boolean.h"

@@ -26,4 +26,6 @@ struct NamespaceString {
 
 extern struct NamespaceString String;
 
+#define $String(value) New(String.Class, value)
+
 #endif /* OOC_STRING_H */

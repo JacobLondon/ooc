@@ -12,4 +12,6 @@ struct NamespaceReal {
 
 extern struct NamespaceReal Real;
 
+#define $Real(value) New(Real.Class, value)
+
 #endif /* OOC_REAL_H */

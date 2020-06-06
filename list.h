@@ -31,4 +31,6 @@ struct NamespaceList {
 
 extern struct NamespaceList List;
 
+#define $List() New(List.Class)
+
 #endif /* OOC_LIST_H */ 

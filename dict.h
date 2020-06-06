@@ -23,4 +23,6 @@ struct NamespaceDict {
 
 extern struct NamespaceDict Dict;
 
+#define $Dict() New(Dict.Class)
+
 #endif /* OOC_DICT_H */

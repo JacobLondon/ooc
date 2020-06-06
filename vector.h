@@ -27,4 +27,6 @@ struct NamespaceVector {
 
 extern struct NamespaceVector Vector;
 
+#define $Vector() New(Vector.Class)
+
 #endif /* OOC_VECTOR_H */

@@ -27,11 +27,11 @@ int main(void)
 		Del(e);
 	}*/
 
-	/*{
+	{
 		var mydict = New(Dict.Class);
 
-		var a = New(String.Class, "Hello");
-		var b = New(String.Class, "There");
+		var a = $String("Hello");
+		var b = $String("There");
 		Setitem(mydict, a, b);
 		
 		printf("a in mydict? %d\n", Contains(mydict, a));
@@ -40,13 +40,15 @@ int main(void)
 
 		Println("Next on dict: {}", mydict);
 		pair *item;
-		while (item = Next(mydict)) {
+		var it = Iter(mydict);
+		while (item = Next(it)) {
 			Println("{}: {}", item->key, item->value);
 		}
 
-		Dict.Initializer(mydict, New(String.Class, "1234"), New(String.Class, "abcd"), NULL, NULL);
+		Dict.Initializer(mydict, $String("1234"), $String("abcd"), NULL);
 		Println("Dict initializer: {}", mydict);
 
+		Del(it);
 		Del(a);
 		Del(b);
 		Del(mydict);
@@ -97,50 +99,48 @@ int main(void)
 
 		Del(s);
 		Del(v);
-	}*/
+	}
 
 	{
-		var v = New(Vector.Class);
-		Vector.Initializer(v, New(String.Class, "Hello"), New(String.Class, "World"), NULL);
+		var v = $Vector();
+		Vector.Initializer(v, $String("Hello"), $String("World"), NULL);
 
-		var i = Iter(v);
-		shared word;
-		while (word = Next(i)) {
+		$For(shared, word, v, {
 			Println("{}", word);
-		}
-		Del(i);
+		});
+
 		Del(v);
 	}
 
 	{
-		var d = New(Dict.Class);
+		var d = $Dict();
 		Dict.Initializer(d,
-			New(String.Class, "Yes"), New(Integer.Class, 10),
-			New(String.Class, "No"), New(Integer.Class, 50),
-			NULL, NULL);
+			$String("Yes"), $Int(10),
+			$String("No"), $Int(50),
+			NULL);
 
-		var r = Iter(d);
-		pair *item;
-		while (item = Next(r)) {
+		$For(pair*, item, d, {
 			Println("{}: {}", item->key, item->value);
-		}
-		Del(r);
+		});
+
 		Del(d);
 	}
 
 	{
-		var s = New(String.Class, "12345678");
+		var s = $String("12345678");
 		Println("{}", s);
-		var i = Iter(s);
-		char *p;
-		while (p = Next(i)) {
+
+		$For(char*, p, s, {
 			printf("%c\n", *p);
-		}
+		});
+
+		Del(s);
 	}
 
+#if 0
 	{
-		var mylist = New(List.Class);
-		List.Initializer(mylist, New(String.Class, "Hello"), New(String.Class, "World"), NULL);
+		var mylist = $List();
+		List.Initializer(mylist, $String("Hello"), $String("World"));
 		var i = Iter(mylist);
 		shared word;
 		while (word = Next(i)) {
@@ -150,6 +150,6 @@ int main(void)
 		Del(i);
 	}
 	
-
+#endif
 	return 0;
 }

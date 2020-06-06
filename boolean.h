@@ -14,4 +14,6 @@ struct NamespaceBoolean {
 
 extern struct NamespaceBoolean Boolean;
 
+#define $Bool(value) New(Boolean.Class, value)
+
 #endif /* OOC_BOOLEAN_H */

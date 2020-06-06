@@ -507,8 +507,11 @@ static void NamespaceDict_Initializer(var _self, ...)
 
 	for (;;) {
 		key = va_arg(ap, var);
+		if (key == NULL) {
+			break;
+		}
 		value = va_arg(ap, var);
-		if (key == NULL || value == NULL) {
+		if (value == NULL) {
 			break;
 		}
 		NamespaceDict_Take(_self, key, value);
