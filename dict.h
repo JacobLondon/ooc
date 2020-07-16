@@ -3,6 +3,25 @@
 
 #include "types.h"
 
+/**
+ * Dictionary
+ * key (hashable)
+ * value (var)
+ *
+ * +---------------+
+ * | keys          |
+ * +---------------+
+ * | values        |
+ * +---------------+
+ * 
+ * Not an ideal implementation, however
+ * all of the pointers to the keys are
+ * adjacent in memory. This creates the
+ * issue where you shouldn't point to
+ * anything inside of the dict as realloc
+ * will invalidate those pointers.
+ */
+
 struct Dict {
 	const void *class;
 	var *values;
