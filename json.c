@@ -83,11 +83,102 @@ static var NamespaceJson_Loads(const var _string)
 	FILE *stream = fmemopen(String.Cstr(_string), Len(_string), "r");
 	assert(stream);
 
-	struct JsonToken token = { JSON_TOKEN_UNKNOWN, New(String.Class, "") };
-	while (json_token_next(stream, &token) == JSON_CODE_OK) {
-		printf("%d('%s')\n", token.type, String.Cstr(token.string));
-	}
+	enum JsonParseState {
+		JSON_PARSE_OBJECT_OPEN,
+		JSON_PARSE_OBJECT_KEY,
+		JSON_PARSE_OBJECT_COLON,
+		JSON_PARSE_OBJECT_VALUE,
+		JSON_PARSE_OBJECT_COMMA,
+		JSON_PARSE_OBJECT_CLOSE,
 
+
+
+		JSON_PARSE_DONE,
+	} state = JSON_PARSE_OBJECT_OPEN;
+
+	struct JsonToken token1 = { JSON_TOKEN_UNKNOWN, New(String.Class, "") };
+	struct JsonToken token2 = { JSON_TOKEN_UNKNOWN, New(String.Class, "") };
+	var tmp1;
+
+	while (json_token_next(stream, &token1) == JSON_CODE_OK) {
+
+		switch (state) {
+			case JSON_PARSE_OBJECT_OPEN:
+				if (token1.type != JSON_TOKEN_LBRACE) {
+					fprintf(stderr, "Object missing open brace\n");
+					goto out;
+				}
+				state = JSON_PARSE_OBJECT_KEY;
+				break;
+
+			case JSON_PARSE_OBJECT_KEY:
+				if (token1.type != JSON_TOKEN_STRING) {
+					fprintf(stderr, "Object key is not string\n");
+					goto out;
+				}
+				tmp1 = Copy(token1.string);
+				state = JSON_PARSE_OBJECT_COLON;
+				break;
+
+			case JSON_PARSE_OBJECT_COLON:
+				if (token1.type != JSON_TOKEN_COLON) {
+					fprintf(stderr, "Object pair is missing a colon\n");
+					goto out;
+				}
+				state = JSON_PARSE_OBJECT_VALUE;
+				break;
+
+			case JSON_PARSE_OBJECT_VALUE:
+				switch (token1.type) {
+					case JSON_TOKEN_STRING:
+					case JSON_TOKEN_INTEGER:
+					case JSON_TOKEN_FLOAT:
+					case JSON_TOKEN_LBRACE:
+					case JSON_TOKEN_LBRACKET:
+					case JSON_TOKEN_TRUE:
+					case JSON_TOKEN_FALSE:
+					case JSON_TOKEN_NULL:
+					default:
+						fprintf(stderr, "Object value is invalid\n");
+						goto out;
+				} // TODO AAAAAHAHAHAAHAHAHAH
+
+				/*if (token1.type != JSON_TOKEN_STRING   ||
+				    token1.type != JSON_TOKEN_INTEGER  ||
+				    token1.type != JSON_TOKEN_FLOAT    ||
+				    token1.type != JSON_TOKEN_LBRACE   ||
+				    token1.type != JSON_TOKEN_LBRACKET ||
+				    token1.type != JSON_TOKEN_TRUE     ||
+				    token1.type != JSON_TOKEN_FALSE    ||
+				    token1.type != JSON_TOKEN_NULL)
+				{
+					fprintf(stderr, "Object value is invalid\n");
+					goto out;
+				}*/
+
+				Setitem(ret, tmp1, token1.string)
+				
+				// peek comma or close brace
+				if (json_token_next(stream, &token2) != JSON_CODE_OK) {
+					fprintf(stderr, "Object pairs invalid close\n");
+					goto out;
+				}
+				if (token2.type == JSON_TOKEN_COMMA) {
+					state = JSON_PARSE_OBJECT_KEY;
+				}
+				else if (token2.type == JSON_TOKEN_RBRACE) {
+					state = 
+				}
+				break;
+
+			case JSON_PARSE_DONE:
+				goto out;
+		}
+	}
+out:
+
+	Del(token1.string);
+	Del(token2.string);
 	fclose(stream);
 	return ret;
 }
