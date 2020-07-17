@@ -284,7 +284,7 @@ static char *Vector_Repr(const var _self)
 	const struct Vector *self = _self;
 	assert(self->class == Vector.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
+	strcatf(&text, "\"<%s object at 0x%x>\"", Nameof(_self), (size_t)self);
 	assert(text);
 	return text;
 }

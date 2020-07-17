@@ -1,0 +1,10 @@
+{
+    "e": "fghi\n",
+    "test": true,
+    "a": false,
+    "q": 10,
+    "b": [12, 2.0, 2e4, 2.3e+4],
+    "d": {
+        "b": "Hello, World!"
+    }
+}

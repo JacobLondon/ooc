@@ -27,6 +27,7 @@ int main(void)
 		Del(e);
 	}*/
 
+#if 0
 	{
 		var mydict = New(Dict.Class);
 
@@ -137,7 +138,6 @@ int main(void)
 		Del(s);
 	}
 
-#if 0
 	{
 		var mylist = $List();
 		List.Initializer(mylist, $String("Hello"), $String("World"));
@@ -151,5 +151,9 @@ int main(void)
 	}
 	
 #endif
+
+	var json = Json.Load("test.json");
+	Del(json);
+
 	return 0;
 }

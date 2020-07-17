@@ -65,6 +65,11 @@ static bool          Real_Bool          (const var _self);
  * Namespace Function Prototypes
  **********************************************************/
 
+double               NamespaceReal_Add  (var _self, double other);
+double               NamespaceReal_Sub  (var _self, double other);
+double               NamespaceReal_Mul  (var _self, double other);
+double               NamespaceReal_Div  (var _self, double other);
+
 /**********************************************************
  * Definitions
  **********************************************************/
@@ -149,6 +154,10 @@ static const struct Class class = {
 
 struct NamespaceReal Real = {
 	.Class = &class,
+	.Add = NamespaceReal_Add,
+	.Sub = NamespaceReal_Sub,
+	.Mul = NamespaceReal_Mul,
+	.Div = NamespaceReal_Div,
 };
 
 /**********************************************************
@@ -432,7 +441,7 @@ static char *Real_Repr(const var _self)
 	const struct Real *self = _self;
 	assert(self->class == Real.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
+	strcatf(&text, "\"<%s object at 0x%x>\"", Nameof(_self), (size_t)self);
 }
 
 static ssize_t Real_Int(const var _self)
@@ -470,3 +479,31 @@ static bool Real_Bool(const var _self)
 /**********************************************************
  * Namespace Functions
  **********************************************************/
+
+double NamespaceReal_Add(var _self, double other)
+{
+	struct Real *self = _self;
+	assert(self->class == Real.Class);
+	self->value += other;
+}
+
+double NamespaceReal_Sub(var _self, double other)
+{
+	struct Real *self = _self;
+	assert(self->class == Real.Class);
+	self->value -= other;
+}
+
+double NamespaceReal_Mul(var _self, double other)
+{
+	struct Real *self = _self;
+	assert(self->class == Real.Class);
+	self->value *= other;
+}
+
+double NamespaceReal_Div(var _self, double other)
+{
+	struct Real *self = _self;
+	assert(self->class == Real.Class);
+	self->value /= other;
+}

@@ -50,10 +50,13 @@ static bool          String_Contains      (const var _self, const var _other);
  * Namespace Function Prototypes
  **********************************************************/
 
+static void          NamespaceString_Clear      (var _self);
 static ptrdiff_t     NamespaceString_Find       (const var _self, const char *substr);
 static var           NamespaceString_Substring  (const var _self, size_t start, size_t length);
+static void          NamespaceString_Reserve    (var _self, size_t size);
 static char*         NamespaceString_Cstr       (const var _self);
 static void          NamespaceString_Catf       (var _self, const char *fmt, ...);
+static void          NamespaceString_Ccatf      (var _self, const char *fmt, ...);
 static void          NamespaceString_Replace    (var _self, const char *old, const char *new);
 static var           NamespaceString_Fread      (const char *path);
 static void          NamespaceString_Fwrite     (var _self, const char *path);
@@ -144,10 +147,13 @@ static const struct Class class = {
 
 struct NamespaceString String = {
 	.Class     = &class,
+	.Clear     = NamespaceString_Clear,
 	.Cstr      = NamespaceString_Cstr,
 	.Find      = NamespaceString_Find,
 	.Substring = NamespaceString_Substring,
+	.Reserve   = NamespaceString_Reserve,
 	.Catf      = NamespaceString_Catf,
+	.Ccatf     = NamespaceString_Ccatf,
 	.Replace   = NamespaceString_Replace,
 	.Fread     = NamespaceString_Fread,
 	.Fwrite    = NamespaceString_Fwrite,
@@ -283,13 +289,13 @@ static char *String_Str(const var _self)
 	
 	char *text = NULL;
 	if (self->text == NULL) {
-		text = strdup("''");
+		text = strdup("\"\"");
 		assert(text);
 	}
 	else {
 		text = calloc(self->size + 3, sizeof(char));
 		assert(text);
-		sprintf(text, "'%s'", self->text);
+		snprintf(text, self->size + 3, "\"%s\"", self->text);
 	}
 
 	return text;
@@ -300,7 +306,7 @@ static char *String_Repr(const var _self)
 	const struct String *self = _self;
 	assert(self->class == String.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
+	strcatf(&text, "\"<%s object at 0x%x>\"", Nameof(_self), (size_t)self);
 	assert(text);
 	return text;
 }
@@ -407,6 +413,14 @@ static bool String_Contains(const var _self, const var _other)
  * Namespace Functions
  **********************************************************/
 
+static void NamespaceString_Clear(var _self)
+{
+	struct String *self = _self;
+	assert(self->class == String.Class);
+	free(self->text);
+	self->text = strdup("");
+}
+
 static char *NamespaceString_Cstr(const var _self)
 {
 	const struct String *self = _self;
@@ -434,6 +448,15 @@ static var NamespaceString_Substring(const var _self, size_t start, size_t lengt
 	return new;
 }
 
+static void NamespaceString_Reserve(var _self, size_t size)
+{
+	struct String *self = _self;
+	assert(self->class == String.Class);
+	assert(self->text);
+	void *tmp = realloc(self->text, size);
+	assert(tmp);
+}
+
 static void NamespaceString_Catf(var _self, const char *fmt, ...)
 {
 	struct String *self = _self;
@@ -446,6 +469,19 @@ static void NamespaceString_Catf(var _self, const char *fmt, ...)
 
 	strcatf(&self->text, "%s", tmp);
 	free(tmp);
+}
+
+static void NamespaceString_Ccatf(var _self, const char *fmt, ...)
+{
+	struct String *self = _self;
+	assert(self->class == String.Class);
+
+	va_list ap, copy;
+	va_start(ap, fmt);
+	va_copy(copy, ap);
+	(void)strcatf_va(&self->text, fmt, &ap, &copy);
+	va_end(copy);
+	va_end(ap);
 }
 
 static void NamespaceString_Replace(var _self, const char *old, const char *new)
@@ -461,7 +497,6 @@ static var NamespaceString_Fread(const char *path)
 	struct String *self = _self;
 	long len;
 	char *buf;
-	size_t bytes;
 	FILE *f = fopen(path, "r");
 	assert(f);
 
@@ -469,10 +504,10 @@ static var NamespaceString_Fread(const char *path)
 	len = ftell(f);
 	fseek(f, 0, SEEK_SET);
 	free(self->text);
-	self->text = calloc(len + 1, sizeof(char));
+	self->text = malloc((len + 1) * sizeof(char));
 	assert(self->text);
-	bytes = fread(self->text, 1, len, f);
-	self->text[bytes] = '\0';
+	self->size = fread(self->text, 1, len, f);
+	self->text[self->size] = '\0';
 	fclose(f);
 	return self;
 }

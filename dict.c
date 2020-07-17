@@ -308,7 +308,7 @@ static char *Dict_Repr(const var _self)
 	const struct Dict *self = _self;
 	assert(self->class == Dict.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
+	strcatf(&text, "\"<%s object at 0x%x>\"", Nameof(_self), (size_t)self);
 	assert(text);
 	return text;
 }

@@ -190,7 +190,7 @@ static char *Iterator_Repr(const var _self)
 	struct Iterator *self = _self;
 	assert(self->class == Iterator.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
+	strcatf(&text, "\"<%s object at 0x%x>\"", Nameof(_self), (size_t)self);
 	return text;
 }
 

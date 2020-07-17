@@ -195,10 +195,10 @@ static char *Boolean_Str(const var _self)
 	assert(self->class == Boolean.Class);
 	char *text = NULL;
 	if (self->value == false) {
-		text = strdup("False");
+		text = strdup("false");
 	}
 	else {
-		text = strdup("True");
+		text = strdup("true");
 	}
 	assert(text);
 	return text;
@@ -209,7 +209,7 @@ static char *Boolean_Repr(const var _self)
 	const struct Boolean *self = _self;
 	assert(self->class == Boolean.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
+	strcatf(&text, "\"<%s object at 0x%x>\"", Nameof(_self), (size_t)self);
 	return text;
 }
 

@@ -600,7 +600,7 @@ char *Format(const char *_fmt, ...)
 	char *ret;
 	va_list ap;
 	va_start(ap, _fmt);
-	ret = Format_va(_fmt, &ap);	
+	ret = Format_va(_fmt, &ap);
 	va_end(ap);
 	return ret;
 }

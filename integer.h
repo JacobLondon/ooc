@@ -10,6 +10,10 @@ struct Integer {
 
 struct NamespaceInteger {
 	const void *Class;
+	ssize_t (* Add)(var _self, ssize_t other);
+	ssize_t (* Sub)(var _self, ssize_t other);
+	ssize_t (* Mul)(var _self, ssize_t other);
+	ssize_t (* Div)(var _self, ssize_t other);
 };
 
 extern struct NamespaceInteger Integer;

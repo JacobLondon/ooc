@@ -7,6 +7,7 @@ OBJS=\
 	dict.o \
 	integer.o \
 	iterator.o \
+	json.o \
 	list.o \
 	main.o \
 	real.o \

@@ -6,6 +6,7 @@
 #include "dict.h"
 #include "integer.h"
 #include "iterator.h"
+#include "json.h"
 #include "vector.h"
 #include "real.h"
 #include "boolean.h"

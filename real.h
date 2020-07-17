@@ -8,6 +8,10 @@ struct Real {
 
 struct NamespaceReal {
 	const void *Class;
+	double (* Add)(var _self, double other);
+	double (* Sub)(var _self, double other);
+	double (* Mul)(var _self, double other);
+	double (* Div)(var _self, double other);
 };
 
 extern struct NamespaceReal Real;

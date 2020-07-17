@@ -70,6 +70,11 @@ static bool          Integer_Bool          (const var _self);
  * Namespace Function Prototypes
  **********************************************************/
 
+ssize_t              NamespaceInteger_Add  (var _self, ssize_t other);
+ssize_t              NamespaceInteger_Sub  (var _self, ssize_t other);
+ssize_t              NamespaceInteger_Mul  (var _self, ssize_t other);
+ssize_t              NamespaceInteger_Div  (var _self, ssize_t other);
+
 /**********************************************************
  * Definitions
  **********************************************************/
@@ -154,6 +159,10 @@ static const struct Class class = {
 
 struct NamespaceInteger Integer = {
 	.Class = &class,
+	.Add = NamespaceInteger_Add,
+	.Sub = NamespaceInteger_Sub,
+	.Mul = NamespaceInteger_Mul,
+	.Div = NamespaceInteger_Div,
 };
 
 /**********************************************************
@@ -531,7 +540,7 @@ static char *Integer_Repr(const var _self)
 	const struct Integer *self = _self;
 	assert(self->class == Integer.Class);
 	char *text = NULL;
-	strcatf(&text, "'<%s object at 0x%x>'", Nameof(_self), (size_t)self);
+	strcatf(&text, "\"<%s object at 0x%x>\"", Nameof(_self), (size_t)self);
 	assert(text);
 	return text;
 }
@@ -571,3 +580,31 @@ static bool Integer_Bool(const var _self)
 /**********************************************************
  * Namespace Functions
  **********************************************************/
+
+ssize_t NamespaceInteger_Add(var _self, ssize_t other)
+{
+	struct Integer *self = _self;
+	assert(self->class == Integer.Class);
+	self->value += other;
+}
+
+ssize_t NamespaceInteger_Sub(var _self, ssize_t other)
+{
+	struct Integer *self = _self;
+	assert(self->class == Integer.Class);
+	self->value -= other;
+}
+
+ssize_t NamespaceInteger_Mul(var _self, ssize_t other)
+{
+	struct Integer *self = _self;
+	assert(self->class == Integer.Class);
+	self->value *= other;
+}
+
+ssize_t NamespaceInteger_Div(var _self, ssize_t other)
+{
+	struct Integer *self = _self;
+	assert(self->class == Integer.Class);
+	self->value /= other;
+}
