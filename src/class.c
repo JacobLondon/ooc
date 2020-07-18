@@ -1,9 +1,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "class.h"
-#include "string.h"
-#include "util.h"
+#include <ooc/class.h>
+#include <ooc/string.h>
+#include <ooc/util.h>
 
 /**********************************************************
  * Class-Neutral Introspection

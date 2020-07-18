@@ -36,8 +36,12 @@ struct NamespaceDict {
 	var      (* Reserve)      (var _self, size_t mod);
 	void     (* Shrink_to_fit)(var _self);
 	size_t   (* Hash)         (const var _self, const var _key);
-	void     (* Take)      (var _self, var _key, var _value);
+	void     (* Take)         (var _self, var _key, var _value);
 	void     (* Initializer)  (var _self, ...);
+	var      (* GetbyStr)     (var _self, char *key);
+	var      (* GetbyInt)     (var _self, size_t key);
+	void     (* SetbyStr)     (var _self, char *key, var _value);
+	void     (* SetbyInt)     (var _self, size_t key, var _value);
 };
 
 extern struct NamespaceDict Dict;

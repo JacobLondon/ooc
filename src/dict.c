@@ -2,10 +2,12 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "util.h"
-#include "class.h"
-#include "dict.h"
-#include "iterator.h"
+#include <ooc/class.h>
+#include <ooc/dict.h>
+#include <ooc/integer.h>
+#include <ooc/iterator.h>
+#include <ooc/string.h>
+#include <ooc/util.h>
 
 #define DICT_DEFAULT_CAP 8
 #define DICT_DEFAULT_SCALING 2
@@ -54,6 +56,10 @@ static var           NamespaceDict_Reserve  (var _self, size_t mod);
 static size_t        NamespaceDict_Hash     (const var _self, const var _key);
 static void          NamespaceDict_Take     (var _self, var _key, var _value);
 static void          NamespaceDict_Initializer(var _self, ...);
+static var           NamespaceDict_GetbyStr (var _self, char *key);
+static var           NamespaceDict_GetbyInt (var _self, size_t key);
+static void          NamespaceDict_SetbyStr (var _self, char *key, var _value);
+static void          NamespaceDict_SetbyInt (var _self, size_t key, var _value);
 
 /**********************************************************
  * Definitions
@@ -145,6 +151,10 @@ struct NamespaceDict Dict = {
 	.Hash          = NamespaceDict_Hash,
 	.Take          = NamespaceDict_Take,
 	.Initializer   = NamespaceDict_Initializer,
+	.GetbyStr      = NamespaceDict_GetbyStr,
+	.GetbyInt      = NamespaceDict_GetbyInt,
+	.SetbyStr      = NamespaceDict_SetbyStr,
+	.SetbyInt      = NamespaceDict_SetbyInt,
 };
 
 struct DictIterator {
@@ -518,4 +528,54 @@ static void NamespaceDict_Initializer(var _self, ...)
 	}
 
 	va_end(ap);
+}
+
+static var NamespaceDict_GetbyStr(var _self, char *key)
+{
+	const struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	size_t index = fnv1a(key, strlen(key));
+	return self->values[index];
+}
+
+static var NamespaceDict_GetbyInt(var _self, size_t key)
+{
+	const struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	size_t index = fnv1a(&key, sizeof(key));
+	return self->values[index];
+}
+
+static void NamespaceDict_SetbyStr(var _self, char *key, var _value)
+{
+	struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	size_t index = fnv1a(key, strlen(key));
+	if (self->keys[index] != NULL) {
+		Del(self->keys[index]);
+		Del(self->values[index]);
+	}
+	if (self->size + 1 == (size_t)(self->cap * DICT_FULL_RATIO)) {
+		NamespaceDict_Reserve(_self, DICT_DEFAULT_SCALING);
+	}
+	self->values[index] = Copy(_value);
+	self->keys[index] = New(String.Class, key);
+	self->size++;
+}
+
+static void NamespaceDict_SetbyInt(var _self, size_t key, var _value)
+{
+	struct Dict *self = _self;
+	assert(self->class == Dict.Class);
+	size_t index = fnv1a(&key, sizeof(key));
+	if (self->keys[index] != NULL) {
+		Del(self->keys[index]);
+		Del(self->values[index]);
+	}
+	if (self->size + 1 == (size_t)(self->cap * DICT_FULL_RATIO)) {
+		NamespaceDict_Reserve(_self, DICT_DEFAULT_SCALING);
+	}
+	self->values[index] = Copy(_value);
+	self->keys[index] = New(Integer.Class, key);
+	self->size++;
 }

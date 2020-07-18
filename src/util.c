@@ -1,14 +1,14 @@
 #include <assert.h>
+#include <ctype.h>
 #include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
-#include <ctype.h>
-#include <stdint.h>
 
-#include "util.h"
+#include <ooc/util.h>
 
 int strcatf(char **buffer, const char *format, ...)
 {

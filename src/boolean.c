@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <string.h>
-#include "class.h"
-#include "util.h"
-#include "boolean.h"
+#include <ooc/boolean.h>
+#include <ooc/class.h>
+#include <ooc/util.h>
 
 /**********************************************************
  * Class Function Prototypes

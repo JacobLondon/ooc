@@ -23,6 +23,10 @@ struct NamespaceVector {
 	void     (* Take_back)    (var _self, var _value);
 	void     (* Initializer)  (var _self, ...); /* NULL terminated */
 	var      (* Strsplit)     (var _string, const char *fmt);
+	shared   (* First)        (var _self);
+	shared   (* Last)         (var _self);
+	shared   (* GetbyInt)     (var _self, size_t idx);
+	shared   (* SetbyInt)     (var _self, size_t idx, var _value);
 };
 
 extern struct NamespaceVector Vector;

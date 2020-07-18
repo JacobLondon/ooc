@@ -1,10 +1,10 @@
 #include <assert.h>
 #include <memory.h>
 
-#include "list.h"
-#include "iterator.h"
-#include "util.h"
-#include "class.h"
+#include <ooc/class.h>
+#include <ooc/iterator.h>
+#include <ooc/list.h>
+#include <ooc/util.h>
 
 /**********************************************************
  * Class Function Prototypes

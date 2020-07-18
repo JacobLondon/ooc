@@ -1,11 +1,11 @@
 #include <assert.h>
 #include <math.h>
 #include <stdarg.h>
-#include "class.h"
-#include "util.h"
-#include "integer.h"
-#include "boolean.h"
-#include "real.h"
+#include <ooc/boolean.h>
+#include <ooc/class.h>
+#include <ooc/integer.h>
+#include <ooc/real.h>
+#include <ooc/util.h>
 
 /**********************************************************
  * Class Function Prototypes

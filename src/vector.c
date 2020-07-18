@@ -1,12 +1,12 @@
 #include <assert.h>
-#include <string.h>
 #include <stdint.h>
+#include <string.h>
 
-#include "util.h"
-#include "class.h"
-#include "string.h"
-#include "iterator.h"
-#include "vector.h"
+#include <ooc/class.h>
+#include <ooc/iterator.h>
+#include <ooc/string.h>
+#include <ooc/util.h>
+#include <ooc/vector.h>
 
 #define VECTOR_DEFAULT_CAP 8
 #define VECTOR_DEFAULT_SCALING 2
@@ -56,6 +56,10 @@ static void          NamespaceVector_Emplace_back (var _self, const void *_class
 static void          NamespaceVector_Take_back    (var _self, var _value);
 static void          NamespaceVector_Initializer  (var _self, ...);
 static var           NamespaceVector_Strsplit     (var _string, const char *fmt);
+static shared        NamespaceVector_First        (var _self);
+static shared        NamespaceVector_Last         (var _self);
+static shared        NamespaceVector_GetbyInt     (var _self, size_t idx);
+static shared        NamespaceVector_SetbyInt     (var _self, size_t idx, var _value);
 
 /**********************************************************
  * Definitions
@@ -150,6 +154,10 @@ struct NamespaceVector Vector = {
 	.Take_back     = NamespaceVector_Take_back,
 	.Initializer   = NamespaceVector_Initializer,
 	.Strsplit      = NamespaceVector_Strsplit,
+	.First         = NamespaceVector_First,
+	.Last          = NamespaceVector_Last,
+	.GetbyInt      = NamespaceVector_GetbyInt,
+	.SetbyInt      = NamespaceVector_SetbyInt,
 };
 
 struct VectorIterator {
@@ -546,4 +554,45 @@ static var NamespaceVector_Strsplit(var _string, const char *fmt)
 	}
 	strsplit_free(buf);
 	return self;
+}
+
+static shared NamespaceVector_First(var _self)
+{
+	struct Vector *self = _self;
+	if (self->size == 0) {
+		return NULL;
+	}
+	return self->buf[0];
+}
+
+static shared NamespaceVector_Last(var _self)
+{
+	struct Vector *self = _self;
+	if (self->size == 0) {
+		return NULL;
+	}
+	return self->buf[self->size - 1];
+}
+
+static shared NamespaceVector_GetbyInt(var _self, size_t idx)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+	if (idx > self->size) {
+		idx = idx % self->size;
+	}
+	return self->buf[idx];
+}
+
+static shared NamespaceVector_SetbyInt(var _self, size_t idx, var _value)
+{
+	struct Vector *self = _self;
+	assert(self->class == Vector.Class);
+	if (idx > self->size) {
+		idx = idx % self->size;
+	}
+	if (self->buf[idx] != NULL) {
+		Del(self->buf[idx]);
+	}
+	self->buf[idx] = Copy(_value);
 }

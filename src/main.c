@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "ooc.h"
+#include <ooc/ooc.h>
 
 int main(void)
 {
@@ -152,7 +152,8 @@ int main(void)
 	
 #endif
 
-	var json = Json.Load("test.json");
+	var json = Json.Load("test/test.json");
+	Println("{}", json);
 	Del(json);
 
 	return 0;

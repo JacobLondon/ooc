@@ -13,9 +13,11 @@ struct NamespaceString {
 	const void *Class;
 	void      (* Clear)     (var _self);
 	char*     (* Cstr)      (const var _self);
-	ptrdiff_t (* Find)      (const var _self, const char *substr);
+	char*     (* Find)      (const var _self, const char *substr);
 	void*     (* Substring) (const var _self, size_t start, size_t length);
 	void      (* Reserve)   (var _self, size_t size);
+	var       (* Dup)       (char *str);
+	var       (* Ndup)      (char *str, size_t length);
 
 	void      (* Catf)      (var _self, const char *fmt, ...);
 	void      (* Ccatf)     (var _self, const char *fmt, ...);

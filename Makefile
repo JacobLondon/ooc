@@ -1,19 +1,19 @@
-TARGET=test
+TARGET=ooctest
 CC=gcc
-CFLAGS=-pipe -march=native -O2 -lm -ggdb
+CFLAGS=-pipe -march=native -Iinclude -O2 -lm -ggdb
 OBJS=\
-	boolean.o \
-	class.o \
-	dict.o \
-	integer.o \
-	iterator.o \
-	json.o \
-	list.o \
-	main.o \
-	real.o \
-	string.o \
-	util.o \
-	vector.o
+	src/boolean.o \
+	src/class.o \
+	src/dict.o \
+	src/integer.o \
+	src/iterator.o \
+	src/json.o \
+	src/list.o \
+	src/main.o \
+	src/real.o \
+	src/string.o \
+	src/util.o \
+	src/vector.o
 
 .PHONY: clean
 

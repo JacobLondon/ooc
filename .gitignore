@@ -3,4 +3,4 @@ a.out
 .DS_Store
 *.o
 *.out
-test
+ooctest

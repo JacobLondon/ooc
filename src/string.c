@@ -4,10 +4,10 @@
 #include <float.h>
 #include <limits.h>
 
-#include "class.h"
-#include "string.h"
-#include "iterator.h"
-#include "util.h"
+#include <ooc/class.h>
+#include <ooc/iterator.h>
+#include <ooc/string.h>
+#include <ooc/util.h>
 
 /**********************************************************
  * Class Function Prototypes
@@ -51,13 +51,15 @@ static bool          String_Contains      (const var _self, const var _other);
  **********************************************************/
 
 static void          NamespaceString_Clear      (var _self);
-static ptrdiff_t     NamespaceString_Find       (const var _self, const char *substr);
+static char*         NamespaceString_Find       (const var _self, const char *substr);
 static var           NamespaceString_Substring  (const var _self, size_t start, size_t length);
 static void          NamespaceString_Reserve    (var _self, size_t size);
 static char*         NamespaceString_Cstr       (const var _self);
 static void          NamespaceString_Catf       (var _self, const char *fmt, ...);
 static void          NamespaceString_Ccatf      (var _self, const char *fmt, ...);
 static void          NamespaceString_Replace    (var _self, const char *old, const char *new);
+static var           NamespaceString_Dup        (char *str);
+static var           NamespaceString_Ndup       (char *str, size_t length);
 static var           NamespaceString_Fread      (const char *path);
 static void          NamespaceString_Fwrite     (var _self, const char *path);
 static void          NamespaceString_Fappend    (var _self, const char *path);
@@ -155,6 +157,8 @@ struct NamespaceString String = {
 	.Catf      = NamespaceString_Catf,
 	.Ccatf     = NamespaceString_Ccatf,
 	.Replace   = NamespaceString_Replace,
+	.Dup       = NamespaceString_Dup,
+	.Ndup      = NamespaceString_Ndup,
 	.Fread     = NamespaceString_Fread,
 	.Fwrite    = NamespaceString_Fwrite,
 	.Fappend   = NamespaceString_Fappend,
@@ -428,12 +432,12 @@ static char *NamespaceString_Cstr(const var _self)
 	return self->text;
 }
 
-static ptrdiff_t NamespaceString_Find(const var _self, const char *substr)
+static char *NamespaceString_Find(const var _self, const char *substr)
 {
 	const struct String *self = _self;
 	assert(self && substr);
 	assert(self->class == String.Class);
-	return (ptrdiff_t)(strstr(self->text, substr) - self->text);
+	return strstr(self->text, substr);
 }
 
 static var NamespaceString_Substring(const var _self, size_t start, size_t length)
@@ -489,6 +493,21 @@ static void NamespaceString_Replace(var _self, const char *old, const char *new)
 	struct String *self = _self;
 	assert(self->class == String.Class);
 	streplace(&self->text, old, new);
+}
+
+static var NamespaceString_Dup(char *str)
+{
+	struct String *self = New(String.Class, str);
+	return self;
+}
+
+static var NamespaceString_Ndup(char *str, size_t length)
+{
+	struct String *self = New(String.Class, "");
+	String.Reserve(self, length + 1);
+	snprintf(self->text, length, "%s", str);
+	self->size = length;
+	return self;
 }
 
 static var NamespaceString_Fread(const char *path)
