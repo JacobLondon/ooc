@@ -1,6 +1,6 @@
 TARGET=ooctest
 CC=gcc
-CFLAGS=-pipe -march=native -Iinclude -O2 -lm -ggdb
+CFLAGS=-pipe -march=native -Iinclude -O0 -lm -ggdb
 OBJS=\
 	src/boolean.o \
 	src/class.o \

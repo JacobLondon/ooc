@@ -212,9 +212,17 @@ static ssize_t String_Cmp(const var _self, const var _other)
 {
 	const struct String *self = _self;
 	const struct String *other = _other;
+	assert(self);
+	assert(other);
+	assert(self->class);
+	assert(other->class);
 	assert(self->class == String.Class);
 	assert(other->class == String.Class);
-	return (ssize_t)strcmp(self->text, other->text);
+	printf("String_Cmp: self:%p, other:%p\n", _self, _other);
+	Println("{}, {}", _self, _other);
+	ssize_t tmp = (ssize_t)strcmp(self->text, other->text);
+	printf("Retval: %jd\n", tmp);
+	return tmp;
 }
 
 static bool String_Eq(const var _self, const var _other)
@@ -224,7 +232,7 @@ static bool String_Eq(const var _self, const var _other)
 
 static bool String_Ne(const var _self, const var _other)
 {
-	return !String_Eq(_self, _other);
+	return String_Cmp(_self, _other) != 0;
 }
 
 /**********************************************************
@@ -459,6 +467,7 @@ static void NamespaceString_Reserve(var _self, size_t size)
 	assert(self->text);
 	void *tmp = realloc(self->text, size);
 	assert(tmp);
+	self->text = tmp;
 }
 
 static void NamespaceString_Catf(var _self, const char *fmt, ...)
@@ -505,7 +514,7 @@ static var NamespaceString_Ndup(char *str, size_t length)
 {
 	struct String *self = New(String.Class, "");
 	String.Reserve(self, length + 1);
-	snprintf(self->text, length, "%s", str);
+	(void)snprintf(self->text, length + 1, "%s", str);
 	self->size = length;
 	return self;
 }

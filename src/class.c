@@ -641,9 +641,14 @@ void Println(const char *_fmt, ...)
 	for (i = 0; _fmt[i] != '\0'; i++) {
 		if (_fmt[i] == '{' && _fmt[i + 1] == '}') {
 			object = va_arg(ap, var);
-			value = Str(object);
-			fputs(value, stdout);
-			free(value);
+			if (object == NULL) {
+				fputs("`nil`", stdout);
+			}
+			else {
+				value = Str(object);
+				fputs(value, stdout);
+				free(value);
+			}
 			i++;
 		}
 		else {

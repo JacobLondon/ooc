@@ -471,7 +471,7 @@ static var NamespaceDict_Reserve(var _self, size_t mod)
 
 	for (size_t index, i = 0; i < oldcap; i++) {
 		if (oldkeys[i] != NULL) {
-			index = Dict.Hash(self, oldkeys[i]);
+			index = NamespaceDict_Hash(self, oldkeys[i]);
 
 			// move value
 			self->values[index] = oldvals[i];
@@ -492,7 +492,7 @@ static void NamespaceDict_Take(var _self, var _key, var _value)
 {
 	struct Dict *self = _self;
 	assert(self->class == Dict.Class);
-	size_t index = Dict.Hash(self, _key);
+	size_t index = NamespaceDict_Hash(self, _key);
 	if (self->keys[index] != NULL) {
 		Del(self->keys[index]);
 		Del(self->values[index]);
