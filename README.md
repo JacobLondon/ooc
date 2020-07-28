@@ -98,7 +98,7 @@ int main(void)
 	var str = Json.Loads("test/test.json");
 	Println("Also string loading: {}", str);
 	Dict.Take(json, $String("New entry"), $Real(134.3));
-	Json.Dump("test/out.json");
+	Json.Dump(json, "test/out.json");
 
 	Del(str);
 	Del(json);
