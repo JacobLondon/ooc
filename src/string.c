@@ -218,10 +218,7 @@ static ssize_t String_Cmp(const var _self, const var _other)
 	assert(other->class);
 	assert(self->class == String.Class);
 	assert(other->class == String.Class);
-	printf("String_Cmp: self:%p, other:%p\n", _self, _other);
-	Println("{}, {}", _self, _other);
 	ssize_t tmp = (ssize_t)strcmp(self->text, other->text);
-	printf("Retval: %jd\n", tmp);
 	return tmp;
 }
 

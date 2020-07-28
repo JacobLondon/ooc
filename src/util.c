@@ -17,7 +17,7 @@ int strcatf(char **buffer, const char *format, ...)
 	va_list copy;
 	va_start(ap, format);
 	va_copy(copy, ap);
-	ret = strcatf_va(buffer, format, &ap, &copy);	
+	ret = strcatf_va(buffer, format, &ap, &copy);
 	va_end(ap);
 	va_end(copy);
 	return ret;

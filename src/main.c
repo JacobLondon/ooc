@@ -154,6 +154,11 @@ int main(void)
 
 	var json = Json.Load("test/test.json");
 	Println("{}", json);
+	var key = $String("d");
+	var key2 = $String("b");
+	Println("Hello, World? {}", Getitem(Getitem(json, key), key2));
+	Del(key);
+	Del(key2);
 	Del(json);
 
 	return 0;

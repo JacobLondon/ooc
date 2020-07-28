@@ -3,6 +3,7 @@ Reading Object-Oriented Programming with ANSI-C
 
 
 # To Do
+* Completely fix dict / vector GetbyInt/GetbyStr
 * Repr print function
 
 # Example 1
@@ -81,6 +82,26 @@ int main(void)
 
 	Del(dict);
 
+	return 0;
+}
+```
+
+# Example 4
+Json reading and writing
+```C
+#include <ooc.h>
+
+int main(void)
+{
+	var json = Json.Load("test/test.json");
+	Println("{}", json);
+	var str = Json.Loads("test/test.json");
+	Println("Also string loading: {}", str);
+	Dict.Take(json, $String("New entry"), $Real(134.3));
+	Json.Dump("test/out.json");
+
+	Del(str);
+	Del(json);
 	return 0;
 }
 ```
