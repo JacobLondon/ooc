@@ -8,9 +8,13 @@ typedef void *var;
 
 typedef void *shared;
 
-typedef struct pair {
+typedef struct tuple1 {
+	var value;
+} tuple1;
+
+typedef struct tuple2 {
 	var key;
 	var value;
-} pair;
+} tuple2;
 
 #endif /* OOC_TYPES_H */

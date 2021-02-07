@@ -159,7 +159,7 @@ struct NamespaceDict Dict = {
 
 struct DictIterator {
 	size_t index;
-	pair keyvalue;
+	tuple2 keyvalue;
 };
 
 /**********************************************************
@@ -388,13 +388,13 @@ static shared Dict_Next(var _self, va_list *ap)
 
 	if (self->size == 0 || state->index == self->size) {
 		state->index = 0;
-		state->keyvalue = (pair){ NULL, NULL };
+		state->keyvalue = (tuple2){ NULL, NULL };
 		return NULL;
 	}
 
 	for (; state->index < self->cap; state->index++) {
 		if (self->keys[state->index] != NULL) {
-			state->keyvalue = (pair){
+			state->keyvalue = (tuple2){
 				self->keys[state->index],
 				self->values[state->index],
 			};
@@ -404,7 +404,7 @@ static shared Dict_Next(var _self, va_list *ap)
 	}
 
 	state->index = 0;
-	state->keyvalue = (pair){ NULL, NULL };
+	state->keyvalue = (tuple2){ NULL, NULL };
 	return NULL;
 }
 
@@ -414,7 +414,7 @@ static var Dict_Iter(const var _self)
 	assert(self->class == Dict.Class);
 	struct DictIterator state = {
 		.index = 0,
-		.keyvalue = (pair){ NULL, NULL },
+		.keyvalue = (tuple2){ NULL, NULL },
 	};
 
 	var iterator = New(Iterator.Class, _self, &state, (size_t)sizeof(state));

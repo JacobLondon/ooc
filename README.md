@@ -43,7 +43,7 @@ int main(void)
 	);
 
 	var it = Iter(dict);
-	pair *item;
+	tuple2 *item;
 	while (item = Next(it)) {
 		Println("{}:", item->key);
 		var lines = Vector.Strsplit(item->value, "\n\r");
@@ -76,7 +76,7 @@ int main(void)
 		$String("Key2"), $Real(3.14159),
 		NULL);
 	
-	$For(pair *, item, dict, {
+	$For(tuple2 *, item, dict, {
 		Println("{}: {}", item->key, item->value);
 	});
 

@@ -40,7 +40,7 @@ int main(void)
 		Println("Dict: {}", mydict);
 
 		Println("Next on dict: {}", mydict);
-		pair *item;
+		tuple2 *item;
 		var it = Iter(mydict);
 		while (item = Next(it)) {
 			Println("{}: {}", item->key, item->value);
@@ -120,7 +120,7 @@ int main(void)
 			$String("No"), $Int(50),
 			NULL);
 
-		$For(pair*, item, d, {
+		$For(tuple2*, item, d, {
 			Println("{}: {}", item->key, item->value);
 		});
 
@@ -149,17 +149,27 @@ int main(void)
 		Del(mylist);
 		Del(i);
 	}
-	
+
+	{
+		var json = Json.Load("test/test.json");
+		Println("{}", json);
+		var key = $String("d");
+		var key2 = $String("b");
+		Println("Hello, World? {}", Getitem(Getitem(json, key), key2));
+		Del(key);
+		Del(key2);
+		Del(json);
+	}
+
 #endif
 
-	var json = Json.Load("test/test.json");
-	Println("{}", json);
-	var key = $String("d");
-	var key2 = $String("b");
-	Println("Hello, World? {}", Getitem(Getitem(json, key), key2));
-	Del(key);
-	Del(key2);
-	Del(json);
+	{
+		var dir = Os.Ls(NULL);
+		$For(shared, filename, dir, {
+			Println("{}", filename);
+		});
+		Del(dir);
+	}
 
 	return 0;
 }

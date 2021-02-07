@@ -10,6 +10,7 @@ OBJS=\
 	src/json.o \
 	src/list.o \
 	src/main.o \
+	src/os.o \
 	src/real.o \
 	src/string.o \
 	src/util.o \

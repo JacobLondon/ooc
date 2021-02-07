@@ -11,6 +11,7 @@
 #include "real.h"
 #include "boolean.h"
 #include "list.h"
+#include "os.h"
 #include "types.h"
 
 #endif /* OOC_OOC_H */
