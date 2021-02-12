@@ -15,4 +15,9 @@ char **strsplit(char *s, const char *fmt);
 void strsplit_free(char **buf);
 size_t fnv1a(const void *buf, size_t size);
 
+int arg_check(int argc, char **argv, const char *arg);
+char *arg_get(int argc, char **argv, const char *arg);
+
+void swap(void **a, void **b);
+
 #endif /* OOC_UTIL_H */

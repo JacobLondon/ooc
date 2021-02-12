@@ -1,5 +1,7 @@
-TARGET=ooctest
+TARGET=libooc.a
+TEST=otest
 CC=gcc
+#CFLAGS=-pipe -march=native -Iinclude -O2 -lm
 CFLAGS=-pipe -march=native -Iinclude -O0 -lm -ggdb
 OBJS=\
 	src/boolean.o \
@@ -9,17 +11,21 @@ OBJS=\
 	src/iterator.o \
 	src/json.o \
 	src/list.o \
-	src/main.o \
 	src/os.o \
 	src/real.o \
 	src/string.o \
 	src/util.o \
 	src/vector.o
+TESTOBJS=\
+	src/main.o
 
 .PHONY: clean
 
 $(TARGET): $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS)
+	ar rcs $@ $^
+
+test: $(TESTOBJS) $(TARGET)
+	$(CC) -o $(TEST) $^
 
 clean:
-	rm -rf *.o *.out $(TARGET) $(OBJS)
+	rm -rf *.o *.out $(TARGET) $(TEST) $(OBJS) $(TESTOBJS)

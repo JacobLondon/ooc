@@ -361,3 +361,36 @@ size_t fnv1a(const void *buf, size_t size)
 	#undef FNV1A_PRIME
 	#undef FNV1A_SEED
 }
+
+int arg_check(int argc, char **argv, const char *arg)
+{
+	int i;
+	for (i = 0; i < argc; i++) {
+		if (strcmp(argv[i], arg) == 0) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+char *arg_get(int argc, char **argv, const char *arg)
+{
+	int i;
+	for (i = 0; i < argc; i++) {
+		if ((strcmp(argv[i], arg) == 0) && (i + 1 < argc)) {
+			return argv[i + 1];
+		}
+	}
+	return NULL;
+}
+
+void swap(void **a, void **b)
+{
+	// swap two pointers
+	void *c = *a;
+	assert(a);
+	assert(b);
+
+	*a = *b;
+	*b = c;
+}

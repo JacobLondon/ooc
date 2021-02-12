@@ -3,4 +3,5 @@ a.out
 .DS_Store
 *.o
 *.out
-ooctest
+libooc.a
+*.exe

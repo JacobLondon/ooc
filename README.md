@@ -1,6 +1,5 @@
 # Object-Oriented C
-Reading Object-Oriented Programming with ANSI-C
-
+Reading Object-Oriented Programming with ANSI-C. Compile with GCC / Mingw through Make
 
 # To Do
 * Completely fix dict / vector GetbyInt/GetbyStr

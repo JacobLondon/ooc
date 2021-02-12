@@ -1,6 +1,7 @@
 #ifndef OOC_TYPES_H
 #define OOC_TYPES_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <sys/types.h>
 

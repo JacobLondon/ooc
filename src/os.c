@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <dirent.h>
-#include <unistd.h>
 #include <limits.h>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 #include <ooc/class.h>
 #include <ooc/string.h>

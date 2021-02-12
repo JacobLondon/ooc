@@ -409,6 +409,7 @@ static bool Vector_Contains(const var _self, const var _other)
 static void NamespaceVector_Clear(var _self)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 	size_t i;
 	for (i = 0; i < self->size; i++) {
@@ -423,6 +424,7 @@ static void NamespaceVector_Clear(var _self)
 static void NamespaceVector_Reserve(var _self, size_t cap)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 	var tmp;
 	size_t i;
@@ -452,6 +454,7 @@ static void NamespaceVector_Reserve(var _self, size_t cap)
 static void NamespaceVector_Shrink_to_fit(var _self)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 
 	NamespaceVector_Reserve(self, self->size);
@@ -460,6 +463,7 @@ static void NamespaceVector_Shrink_to_fit(var _self)
 static void NamespaceVector_Push_back(var _self, var _value)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 
 	if (self->size + 1 >= self->cap) {
@@ -471,6 +475,7 @@ static void NamespaceVector_Push_back(var _self, var _value)
 static void NamespaceVector_Pop_back(var _self)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 
 	if (self->buf[self->size - 1]) {
@@ -482,6 +487,7 @@ static void NamespaceVector_Pop_back(var _self)
 static size_t NamespaceVector_Find(const var _self, const var _value)
 {
 	const struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 
 	size_t i;
@@ -498,6 +504,8 @@ static void NamespaceVector_Emplace_back(var _self, const void *_class, ...)
 	struct Vector *self = _self;
 	va_list ap;
 	var new;
+	assert(self);
+	assert(_class);
 	assert(self->class == Vector.Class);
 
 	if (self->size + 1 >= self->cap) {
@@ -512,7 +520,9 @@ static void NamespaceVector_Emplace_back(var _self, const void *_class, ...)
 static void NamespaceVector_Take_back(var _self, var _value)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
+	assert(_value);
 	if (self->size + 1 >= self->cap) {
 		NamespaceVector_Reserve(self, self->cap * VECTOR_DEFAULT_SCALING);
 	}
@@ -523,6 +533,7 @@ static void NamespaceVector_Take_back(var _self, var _value)
 static void NamespaceVector_Initializer(var _self, ...)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 	va_list ap;
 	var p = NULL;
@@ -559,6 +570,7 @@ static var NamespaceVector_Strsplit(var _string, const char *fmt)
 static shared NamespaceVector_First(var _self)
 {
 	struct Vector *self = _self;
+	assert(self);
 	if (self->size == 0) {
 		return NULL;
 	}
@@ -568,6 +580,7 @@ static shared NamespaceVector_First(var _self)
 static shared NamespaceVector_Last(var _self)
 {
 	struct Vector *self = _self;
+	assert(self);
 	if (self->size == 0) {
 		return NULL;
 	}
@@ -577,6 +590,7 @@ static shared NamespaceVector_Last(var _self)
 static shared NamespaceVector_GetbyInt(var _self, size_t idx)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 	if (idx > self->size) {
 		idx = idx % self->size;
@@ -587,6 +601,7 @@ static shared NamespaceVector_GetbyInt(var _self, size_t idx)
 static shared NamespaceVector_SetbyInt(var _self, size_t idx, var _value)
 {
 	struct Vector *self = _self;
+	assert(self);
 	assert(self->class == Vector.Class);
 	if (idx > self->size) {
 		idx = idx % self->size;
