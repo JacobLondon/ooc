@@ -28,4 +28,4 @@ test: $(TESTOBJS) $(TARGET)
 	$(CC) -o $(TEST) $^
 
 clean:
-	rm -rf *.o *.out $(TARGET) $(TEST) $(OBJS) $(TESTOBJS)
+	rm -rf *.a *.o *.out $(TARGET) $(TEST) $(OBJS) $(TESTOBJS)
